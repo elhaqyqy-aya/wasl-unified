@@ -9,38 +9,350 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRhRouteImport } from './routes/dashboard.rh'
+import { Route as DashboardManagerRouteImport } from './routes/dashboard.manager'
+import { Route as DashboardCollabRouteImport } from './routes/dashboard.collab'
+import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
+import { Route as DashboardRhIndexRouteImport } from './routes/dashboard.rh.index'
+import { Route as DashboardManagerIndexRouteImport } from './routes/dashboard.manager.index'
+import { Route as DashboardCollabIndexRouteImport } from './routes/dashboard.collab.index'
+import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admin.index'
+import { Route as DashboardRhWorkflowsRouteImport } from './routes/dashboard.rh.workflows'
+import { Route as DashboardRhProfileRouteImport } from './routes/dashboard.rh.profile'
+import { Route as DashboardRhPeopleRouteImport } from './routes/dashboard.rh.people'
+import { Route as DashboardRhDocumentsRouteImport } from './routes/dashboard.rh.documents'
+import { Route as DashboardManagerTeamRouteImport } from './routes/dashboard.manager.team'
+import { Route as DashboardManagerProfileRouteImport } from './routes/dashboard.manager.profile'
+import { Route as DashboardManagerInsightsRouteImport } from './routes/dashboard.manager.insights'
+import { Route as DashboardManagerAlertsRouteImport } from './routes/dashboard.manager.alerts'
+import { Route as DashboardCollabProfileRouteImport } from './routes/dashboard.collab.profile'
+import { Route as DashboardCollabOnboardingRouteImport } from './routes/dashboard.collab.onboarding'
+import { Route as DashboardCollabDocumentsRouteImport } from './routes/dashboard.collab.documents'
+import { Route as DashboardCollabAssistantRouteImport } from './routes/dashboard.collab.assistant'
+import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
+import { Route as DashboardAdminSettingsRouteImport } from './routes/dashboard.admin.settings'
+import { Route as DashboardAdminSecurityRouteImport } from './routes/dashboard.admin.security'
+import { Route as DashboardAdminProfileRouteImport } from './routes/dashboard.admin.profile'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRhRoute = DashboardRhRouteImport.update({
+  id: '/dashboard/rh',
+  path: '/dashboard/rh',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardManagerRoute = DashboardManagerRouteImport.update({
+  id: '/dashboard/manager',
+  path: '/dashboard/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardCollabRoute = DashboardCollabRouteImport.update({
+  id: '/dashboard/collab',
+  path: '/dashboard/collab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAdminRoute = DashboardAdminRouteImport.update({
+  id: '/dashboard/admin',
+  path: '/dashboard/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRhIndexRoute = DashboardRhIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardManagerIndexRoute = DashboardManagerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
+const DashboardCollabIndexRoute = DashboardCollabIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardCollabRoute,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardRhWorkflowsRoute = DashboardRhWorkflowsRouteImport.update({
+  id: '/workflows',
+  path: '/workflows',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardRhProfileRoute = DashboardRhProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardRhPeopleRoute = DashboardRhPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardRhDocumentsRoute = DashboardRhDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardManagerTeamRoute = DashboardManagerTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
+const DashboardManagerProfileRoute = DashboardManagerProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
+const DashboardManagerInsightsRoute =
+  DashboardManagerInsightsRouteImport.update({
+    id: '/insights',
+    path: '/insights',
+    getParentRoute: () => DashboardManagerRoute,
+  } as any)
+const DashboardManagerAlertsRoute = DashboardManagerAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
+const DashboardCollabProfileRoute = DashboardCollabProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardCollabRoute,
+} as any)
+const DashboardCollabOnboardingRoute =
+  DashboardCollabOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
+    getParentRoute: () => DashboardCollabRoute,
+  } as any)
+const DashboardCollabDocumentsRoute =
+  DashboardCollabDocumentsRouteImport.update({
+    id: '/documents',
+    path: '/documents',
+    getParentRoute: () => DashboardCollabRoute,
+  } as any)
+const DashboardCollabAssistantRoute =
+  DashboardCollabAssistantRouteImport.update({
+    id: '/assistant',
+    path: '/assistant',
+    getParentRoute: () => DashboardCollabRoute,
+  } as any)
+const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminSettingsRoute = DashboardAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminSecurityRoute = DashboardAdminSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminProfileRoute = DashboardAdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/collab': typeof DashboardCollabRouteWithChildren
+  '/dashboard/manager': typeof DashboardManagerRouteWithChildren
+  '/dashboard/rh': typeof DashboardRhRouteWithChildren
+  '/dashboard/admin/profile': typeof DashboardAdminProfileRoute
+  '/dashboard/admin/security': typeof DashboardAdminSecurityRoute
+  '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
+  '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
+  '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
+  '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/team': typeof DashboardManagerTeamRoute
+  '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
+  '/dashboard/rh/people': typeof DashboardRhPeopleRoute
+  '/dashboard/rh/profile': typeof DashboardRhProfileRoute
+  '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/collab/': typeof DashboardCollabIndexRoute
+  '/dashboard/manager/': typeof DashboardManagerIndexRoute
+  '/dashboard/rh/': typeof DashboardRhIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard/admin/profile': typeof DashboardAdminProfileRoute
+  '/dashboard/admin/security': typeof DashboardAdminSecurityRoute
+  '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
+  '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
+  '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
+  '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/team': typeof DashboardManagerTeamRoute
+  '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
+  '/dashboard/rh/people': typeof DashboardRhPeopleRoute
+  '/dashboard/rh/profile': typeof DashboardRhProfileRoute
+  '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
+  '/dashboard/admin': typeof DashboardAdminIndexRoute
+  '/dashboard/collab': typeof DashboardCollabIndexRoute
+  '/dashboard/manager': typeof DashboardManagerIndexRoute
+  '/dashboard/rh': typeof DashboardRhIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard/admin': typeof DashboardAdminRouteWithChildren
+  '/dashboard/collab': typeof DashboardCollabRouteWithChildren
+  '/dashboard/manager': typeof DashboardManagerRouteWithChildren
+  '/dashboard/rh': typeof DashboardRhRouteWithChildren
+  '/dashboard/admin/profile': typeof DashboardAdminProfileRoute
+  '/dashboard/admin/security': typeof DashboardAdminSecurityRoute
+  '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
+  '/dashboard/admin/users': typeof DashboardAdminUsersRoute
+  '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
+  '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
+  '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
+  '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/team': typeof DashboardManagerTeamRoute
+  '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
+  '/dashboard/rh/people': typeof DashboardRhPeopleRoute
+  '/dashboard/rh/profile': typeof DashboardRhProfileRoute
+  '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
+  '/dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/dashboard/collab/': typeof DashboardCollabIndexRoute
+  '/dashboard/manager/': typeof DashboardManagerIndexRoute
+  '/dashboard/rh/': typeof DashboardRhIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard/admin'
+    | '/dashboard/collab'
+    | '/dashboard/manager'
+    | '/dashboard/rh'
+    | '/dashboard/admin/profile'
+    | '/dashboard/admin/security'
+    | '/dashboard/admin/settings'
+    | '/dashboard/admin/users'
+    | '/dashboard/collab/assistant'
+    | '/dashboard/collab/documents'
+    | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/profile'
+    | '/dashboard/manager/alerts'
+    | '/dashboard/manager/insights'
+    | '/dashboard/manager/profile'
+    | '/dashboard/manager/team'
+    | '/dashboard/rh/documents'
+    | '/dashboard/rh/people'
+    | '/dashboard/rh/profile'
+    | '/dashboard/rh/workflows'
+    | '/dashboard/admin/'
+    | '/dashboard/collab/'
+    | '/dashboard/manager/'
+    | '/dashboard/rh/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard/admin/profile'
+    | '/dashboard/admin/security'
+    | '/dashboard/admin/settings'
+    | '/dashboard/admin/users'
+    | '/dashboard/collab/assistant'
+    | '/dashboard/collab/documents'
+    | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/profile'
+    | '/dashboard/manager/alerts'
+    | '/dashboard/manager/insights'
+    | '/dashboard/manager/profile'
+    | '/dashboard/manager/team'
+    | '/dashboard/rh/documents'
+    | '/dashboard/rh/people'
+    | '/dashboard/rh/profile'
+    | '/dashboard/rh/workflows'
+    | '/dashboard/admin'
+    | '/dashboard/collab'
+    | '/dashboard/manager'
+    | '/dashboard/rh'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/dashboard/admin'
+    | '/dashboard/collab'
+    | '/dashboard/manager'
+    | '/dashboard/rh'
+    | '/dashboard/admin/profile'
+    | '/dashboard/admin/security'
+    | '/dashboard/admin/settings'
+    | '/dashboard/admin/users'
+    | '/dashboard/collab/assistant'
+    | '/dashboard/collab/documents'
+    | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/profile'
+    | '/dashboard/manager/alerts'
+    | '/dashboard/manager/insights'
+    | '/dashboard/manager/profile'
+    | '/dashboard/manager/team'
+    | '/dashboard/rh/documents'
+    | '/dashboard/rh/people'
+    | '/dashboard/rh/profile'
+    | '/dashboard/rh/workflows'
+    | '/dashboard/admin/'
+    | '/dashboard/collab/'
+    | '/dashboard/manager/'
+    | '/dashboard/rh/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
+  DashboardCollabRoute: typeof DashboardCollabRouteWithChildren
+  DashboardManagerRoute: typeof DashboardManagerRouteWithChildren
+  DashboardRhRoute: typeof DashboardRhRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +360,263 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/rh': {
+      id: '/dashboard/rh'
+      path: '/dashboard/rh'
+      fullPath: '/dashboard/rh'
+      preLoaderRoute: typeof DashboardRhRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/manager': {
+      id: '/dashboard/manager'
+      path: '/dashboard/manager'
+      fullPath: '/dashboard/manager'
+      preLoaderRoute: typeof DashboardManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/collab': {
+      id: '/dashboard/collab'
+      path: '/dashboard/collab'
+      fullPath: '/dashboard/collab'
+      preLoaderRoute: typeof DashboardCollabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/admin': {
+      id: '/dashboard/admin'
+      path: '/dashboard/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/rh/': {
+      id: '/dashboard/rh/'
+      path: '/'
+      fullPath: '/dashboard/rh/'
+      preLoaderRoute: typeof DashboardRhIndexRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/manager/': {
+      id: '/dashboard/manager/'
+      path: '/'
+      fullPath: '/dashboard/manager/'
+      preLoaderRoute: typeof DashboardManagerIndexRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
+    '/dashboard/collab/': {
+      id: '/dashboard/collab/'
+      path: '/'
+      fullPath: '/dashboard/collab/'
+      preLoaderRoute: typeof DashboardCollabIndexRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/admin/': {
+      id: '/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/rh/workflows': {
+      id: '/dashboard/rh/workflows'
+      path: '/workflows'
+      fullPath: '/dashboard/rh/workflows'
+      preLoaderRoute: typeof DashboardRhWorkflowsRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/rh/profile': {
+      id: '/dashboard/rh/profile'
+      path: '/profile'
+      fullPath: '/dashboard/rh/profile'
+      preLoaderRoute: typeof DashboardRhProfileRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/rh/people': {
+      id: '/dashboard/rh/people'
+      path: '/people'
+      fullPath: '/dashboard/rh/people'
+      preLoaderRoute: typeof DashboardRhPeopleRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/rh/documents': {
+      id: '/dashboard/rh/documents'
+      path: '/documents'
+      fullPath: '/dashboard/rh/documents'
+      preLoaderRoute: typeof DashboardRhDocumentsRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/manager/team': {
+      id: '/dashboard/manager/team'
+      path: '/team'
+      fullPath: '/dashboard/manager/team'
+      preLoaderRoute: typeof DashboardManagerTeamRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
+    '/dashboard/manager/profile': {
+      id: '/dashboard/manager/profile'
+      path: '/profile'
+      fullPath: '/dashboard/manager/profile'
+      preLoaderRoute: typeof DashboardManagerProfileRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
+    '/dashboard/manager/insights': {
+      id: '/dashboard/manager/insights'
+      path: '/insights'
+      fullPath: '/dashboard/manager/insights'
+      preLoaderRoute: typeof DashboardManagerInsightsRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
+    '/dashboard/manager/alerts': {
+      id: '/dashboard/manager/alerts'
+      path: '/alerts'
+      fullPath: '/dashboard/manager/alerts'
+      preLoaderRoute: typeof DashboardManagerAlertsRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
+    '/dashboard/collab/profile': {
+      id: '/dashboard/collab/profile'
+      path: '/profile'
+      fullPath: '/dashboard/collab/profile'
+      preLoaderRoute: typeof DashboardCollabProfileRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/collab/onboarding': {
+      id: '/dashboard/collab/onboarding'
+      path: '/onboarding'
+      fullPath: '/dashboard/collab/onboarding'
+      preLoaderRoute: typeof DashboardCollabOnboardingRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/collab/documents': {
+      id: '/dashboard/collab/documents'
+      path: '/documents'
+      fullPath: '/dashboard/collab/documents'
+      preLoaderRoute: typeof DashboardCollabDocumentsRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/collab/assistant': {
+      id: '/dashboard/collab/assistant'
+      path: '/assistant'
+      fullPath: '/dashboard/collab/assistant'
+      preLoaderRoute: typeof DashboardCollabAssistantRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/admin/users': {
+      id: '/dashboard/admin/users'
+      path: '/users'
+      fullPath: '/dashboard/admin/users'
+      preLoaderRoute: typeof DashboardAdminUsersRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/settings': {
+      id: '/dashboard/admin/settings'
+      path: '/settings'
+      fullPath: '/dashboard/admin/settings'
+      preLoaderRoute: typeof DashboardAdminSettingsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/security': {
+      id: '/dashboard/admin/security'
+      path: '/security'
+      fullPath: '/dashboard/admin/security'
+      preLoaderRoute: typeof DashboardAdminSecurityRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/profile': {
+      id: '/dashboard/admin/profile'
+      path: '/profile'
+      fullPath: '/dashboard/admin/profile'
+      preLoaderRoute: typeof DashboardAdminProfileRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
   }
 }
 
+interface DashboardAdminRouteChildren {
+  DashboardAdminProfileRoute: typeof DashboardAdminProfileRoute
+  DashboardAdminSecurityRoute: typeof DashboardAdminSecurityRoute
+  DashboardAdminSettingsRoute: typeof DashboardAdminSettingsRoute
+  DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute
+  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
+}
+
+const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
+  DashboardAdminProfileRoute: DashboardAdminProfileRoute,
+  DashboardAdminSecurityRoute: DashboardAdminSecurityRoute,
+  DashboardAdminSettingsRoute: DashboardAdminSettingsRoute,
+  DashboardAdminUsersRoute: DashboardAdminUsersRoute,
+  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
+}
+
+const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
+  DashboardAdminRouteChildren,
+)
+
+interface DashboardCollabRouteChildren {
+  DashboardCollabAssistantRoute: typeof DashboardCollabAssistantRoute
+  DashboardCollabDocumentsRoute: typeof DashboardCollabDocumentsRoute
+  DashboardCollabOnboardingRoute: typeof DashboardCollabOnboardingRoute
+  DashboardCollabProfileRoute: typeof DashboardCollabProfileRoute
+  DashboardCollabIndexRoute: typeof DashboardCollabIndexRoute
+}
+
+const DashboardCollabRouteChildren: DashboardCollabRouteChildren = {
+  DashboardCollabAssistantRoute: DashboardCollabAssistantRoute,
+  DashboardCollabDocumentsRoute: DashboardCollabDocumentsRoute,
+  DashboardCollabOnboardingRoute: DashboardCollabOnboardingRoute,
+  DashboardCollabProfileRoute: DashboardCollabProfileRoute,
+  DashboardCollabIndexRoute: DashboardCollabIndexRoute,
+}
+
+const DashboardCollabRouteWithChildren = DashboardCollabRoute._addFileChildren(
+  DashboardCollabRouteChildren,
+)
+
+interface DashboardManagerRouteChildren {
+  DashboardManagerAlertsRoute: typeof DashboardManagerAlertsRoute
+  DashboardManagerInsightsRoute: typeof DashboardManagerInsightsRoute
+  DashboardManagerProfileRoute: typeof DashboardManagerProfileRoute
+  DashboardManagerTeamRoute: typeof DashboardManagerTeamRoute
+  DashboardManagerIndexRoute: typeof DashboardManagerIndexRoute
+}
+
+const DashboardManagerRouteChildren: DashboardManagerRouteChildren = {
+  DashboardManagerAlertsRoute: DashboardManagerAlertsRoute,
+  DashboardManagerInsightsRoute: DashboardManagerInsightsRoute,
+  DashboardManagerProfileRoute: DashboardManagerProfileRoute,
+  DashboardManagerTeamRoute: DashboardManagerTeamRoute,
+  DashboardManagerIndexRoute: DashboardManagerIndexRoute,
+}
+
+const DashboardManagerRouteWithChildren =
+  DashboardManagerRoute._addFileChildren(DashboardManagerRouteChildren)
+
+interface DashboardRhRouteChildren {
+  DashboardRhDocumentsRoute: typeof DashboardRhDocumentsRoute
+  DashboardRhPeopleRoute: typeof DashboardRhPeopleRoute
+  DashboardRhProfileRoute: typeof DashboardRhProfileRoute
+  DashboardRhWorkflowsRoute: typeof DashboardRhWorkflowsRoute
+  DashboardRhIndexRoute: typeof DashboardRhIndexRoute
+}
+
+const DashboardRhRouteChildren: DashboardRhRouteChildren = {
+  DashboardRhDocumentsRoute: DashboardRhDocumentsRoute,
+  DashboardRhPeopleRoute: DashboardRhPeopleRoute,
+  DashboardRhProfileRoute: DashboardRhProfileRoute,
+  DashboardRhWorkflowsRoute: DashboardRhWorkflowsRoute,
+  DashboardRhIndexRoute: DashboardRhIndexRoute,
+}
+
+const DashboardRhRouteWithChildren = DashboardRhRoute._addFileChildren(
+  DashboardRhRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  DashboardAdminRoute: DashboardAdminRouteWithChildren,
+  DashboardCollabRoute: DashboardCollabRouteWithChildren,
+  DashboardManagerRoute: DashboardManagerRouteWithChildren,
+  DashboardRhRoute: DashboardRhRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
