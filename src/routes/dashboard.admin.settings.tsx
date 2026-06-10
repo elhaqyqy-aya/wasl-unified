@@ -21,7 +21,7 @@ function Toggle({ label, hint, defaultOn }: { label: string; hint: string; defau
 function Settings() {
   return (
     <div className="space-y-6">
-      <PageHeader kicker="Platform" title="Settings & policies" subtitle="Configure how HumaNai behaves across roles and data domains." />
+      <PageHeader kicker="Platform" title="Settings & policies" subtitle="Configure how Wasl by Humanai behaves across roles and data domains." />
       <div className="grid lg:grid-cols-2 gap-5">
         <Panel title="AI assistant policies">
           <Toggle label="Strict knowledge boundary" hint="Refuse questions outside the user's authorized scope." defaultOn />
