@@ -14,16 +14,376 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      absences: {
+        Row: {
+          approved_by: string | null
+          created_at: string
+          employee_id: string
+          end_date: string
+          id: string
+          reason: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["absence_status"]
+          type: Database["public"]["Enums"]["absence_type"]
+        }
+        Insert: {
+          approved_by?: string | null
+          created_at?: string
+          employee_id: string
+          end_date: string
+          id?: string
+          reason?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["absence_status"]
+          type: Database["public"]["Enums"]["absence_type"]
+        }
+        Update: {
+          approved_by?: string | null
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          id?: string
+          reason?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["absence_status"]
+          type?: Database["public"]["Enums"]["absence_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "absences_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "absences_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      alerts: {
+        Row: {
+          acknowledged: boolean
+          created_at: string
+          description: string | null
+          id: string
+          severity: Database["public"]["Enums"]["alert_severity"]
+          target_id: string | null
+          title: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          target_id?: string | null
+          title: string
+        }
+        Update: {
+          acknowledged?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          target_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          issued_at: string | null
+          owner_id: string
+          size_bytes: number | null
+          storage_path: string | null
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issued_at?: string | null
+          owner_id: string
+          size_bytes?: number | null
+          storage_path?: string | null
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issued_at?: string | null
+          owner_id?: string
+          size_bytes?: number | null
+          storage_path?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["document_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      engagement: {
+        Row: {
+          created_at: string
+          employee_id: string
+          id: string
+          measured_at: string
+          pulse_note: string | null
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          id?: string
+          measured_at?: string
+          pulse_note?: string | null
+          score: number
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          id?: string
+          measured_at?: string
+          pulse_note?: string | null
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "engagement_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_step: string | null
+          employee_id: string
+          id: string
+          progress: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["onboarding_status"]
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: string | null
+          employee_id: string
+          id?: string
+          progress?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: string | null
+          employee_id?: string
+          id?: string
+          progress?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organisations: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          department: string | null
+          email: string
+          full_name: string
+          hire_date: string | null
+          id: string
+          location: string | null
+          manager_id: string | null
+          organisation_id: string | null
+          phone: string | null
+          position: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email: string
+          full_name?: string
+          hire_date?: string | null
+          id: string
+          location?: string | null
+          manager_id?: string | null
+          organisation_id?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          location?: string | null
+          manager_id?: string | null
+          organisation_id?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_organisation_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      absence_status: "pending" | "approved" | "rejected" | "cancelled"
+      absence_type: "vacation" | "sick" | "remote" | "unpaid" | "training"
+      alert_severity: "info" | "warning" | "critical"
+      app_role: "admin" | "rh" | "manager" | "collab"
+      document_type:
+        | "contract"
+        | "payslip"
+        | "policy"
+        | "certificate"
+        | "id"
+        | "other"
+      onboarding_status: "not_started" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +510,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      absence_status: ["pending", "approved", "rejected", "cancelled"],
+      absence_type: ["vacation", "sick", "remote", "unpaid", "training"],
+      alert_severity: ["info", "warning", "critical"],
+      app_role: ["admin", "rh", "manager", "collab"],
+      document_type: [
+        "contract",
+        "payslip",
+        "policy",
+        "certificate",
+        "id",
+        "other",
+      ],
+      onboarding_status: ["not_started", "in_progress", "completed"],
+    },
   },
 } as const
