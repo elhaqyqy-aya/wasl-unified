@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import splashVideo from "@/assets/dreamina.mp4.asset.json";
 
 let SHOWN_THIS_SESSION = false;
 
@@ -25,7 +24,7 @@ export function SplashScreen() {
     setTimeout(() => setShow(false), 450);
   };
 
-  const srcUrl = (splashVideo && (splashVideo as any).url) || "/dreamina.mp4";
+  const srcUrl = "/dreamina.mp4";
 
   if (!show) return null;
 
