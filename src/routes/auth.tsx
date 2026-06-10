@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowUpRight, Mail, Lock, ShieldCheck, Compass, Sparkles, HeartHandshake } from "lucide-react";
-import { ROLE_META, setUser, findAccount, DEMO_ACCOUNTS } from "@/lib/auth";
+import { ROLE_META, signIn, DEMO_ACCOUNTS, type Role } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — WASL" },
-      { name: "description", content: "Sign in to WASL — the AI HR platform by HumaNai × EDUNAI." },
+      { title: "Sign in — Wasl by Humanai" },
+      { name: "description", content: "Sign in to Wasl — the AI HR platform by Humanai." },
     ],
   }),
   component: AuthPage,
@@ -22,16 +22,23 @@ function AuthPage() {
   const [err, setErr] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    const acc = findAccount(email, password);
-    if (!acc) { setErr("Invalid email or password. Try one of the demo accounts below."); return; }
     setLoading(true);
-    setTimeout(() => {
-      setUser({ id: acc.email, name: acc.name, email: acc.email, role: acc.role });
-      navigate({ to: ROLE_META[acc.role].path });
-    }, 400);
+    try {
+      const user = await signIn(email, password);
+      navigate({ to: ROLE_META[user.role].path });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Sign-in failed.";
+      setErr(
+        message.toLowerCase().includes("invalid")
+          ? "Invalid email or password. Demo accounts must be seeded first — ask an admin to run Seed Demo Accounts."
+          : message,
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   function quick(i: number) {
@@ -101,7 +108,7 @@ function AuthPage() {
               <div className="section-label mb-3">demo accounts</div>
               <div className="space-y-2">
                 {DEMO_ACCOUNTS.map((a, i) => {
-                  const Icon = ICONS[a.role];
+                  const Icon = ICONS[a.role as Role];
                   return (
                     <button
                       key={a.email}
