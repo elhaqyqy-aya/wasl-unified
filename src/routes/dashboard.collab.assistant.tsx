@@ -34,7 +34,7 @@ function reply(q: string) {
 
 function Assistant() {
   const [msgs, setMsgs] = useState<Msg[]>([
-    { from: "bot", text: "Hi  I'm your HumaNai assistant. Ask me anything about your HR — I'll answer from validated policies only." },
+    { from: "bot", text: "Hi  I'm your Wasl by Humanai assistant. Ask me anything about your HR — I'll answer from validated policies only." },
   ]);
   const [input, setInput] = useState("");
 

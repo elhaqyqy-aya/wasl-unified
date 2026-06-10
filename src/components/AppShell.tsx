@@ -112,7 +112,7 @@ export function AppShell({ role }: { role: Role }) {
       <header className="px-2 pt-2 sticky top-0 z-40">
         <div className="edunai-card px-4 h-14 flex items-center justify-between shadow-[0_4px_20px_-12px_rgba(0,0,0,.15)]">
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-display font-extrabold text-lg tracking-tight">HumaNai</span>
+            <span className="font-display font-extrabold text-lg tracking-tight">Wasl by Humanai</span>
             <span className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground pl-2 border-l border-border h-4 flex items-center">{ROLE_META[role].label}</span>
           </Link>
           <div className="flex items-center gap-1">

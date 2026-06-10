@@ -58,7 +58,7 @@ function AuthPage() {
 
       <header className="px-2 pt-2 sticky top-0 z-40">
         <div className="edunai-card px-4 h-14 flex items-center justify-center">
-          <div className="font-display font-extrabold text-lg">HumaNai</div>
+          <div className="font-display font-extrabold text-lg">Wasl by Humanai</div>
         </div>
       </header>
 

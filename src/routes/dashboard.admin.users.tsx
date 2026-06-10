@@ -3,6 +3,8 @@ import { useState } from "react";
 import { PageHeader, Stat } from "@/components/dashboard/Bits";
 import { Modal, Toast } from "@/components/Modal";
 import { Search, UserPlus, Mail, Phone, MapPin, Briefcase, Calendar, ChevronRight, ShieldCheck, Ban } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { createUserAccount } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/dashboard/admin/users")({
   component: AdminUsers,
@@ -137,10 +139,10 @@ function AdminUsers() {
       </Modal>
 
       {/* Invite */}
-      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Invite a new user"
+      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Create a new account"
         footer={
           <button form="adm-invite" type="submit" className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase">
-            Send invitation
+            Create account
           </button>
         }>
         <InviteForm onSent={(m) => { setInvite(false); setToast(m); }} />
@@ -154,12 +156,34 @@ function AdminUsers() {
 function InviteForm({ onSent }: { onSent: (m: string) => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("Collaborator");
+  const [role, setRole] = useState<"collab" | "manager" | "rh" | "admin">("collab");
   const [dept, setDept] = useState("");
-  function submit(e: React.FormEvent) {
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const create = useServerFn(createUserAccount);
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    onSent(`Invite sent to ${email}`);
+    setError(null);
+    setBusy(true);
+    try {
+      await create({ data: { email, password, full_name: name, role, department: dept || undefined } });
+      onSent(`Account created for ${email}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create account");
+    } finally {
+      setBusy(false);
+    }
   }
+
+  const roles: { v: typeof role; label: string }[] = [
+    { v: "collab", label: "Collaborator" },
+    { v: "manager", label: "Manager" },
+    { v: "rh", label: "HR" },
+    { v: "admin", label: "Admin" },
+  ];
+
   return (
     <form id="adm-invite" onSubmit={submit} className="space-y-3">
       <div className="field"><div className="relative">
@@ -171,20 +195,26 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
         <label htmlFor="au-email">Work email</label>
       </div></div>
       <div className="field"><div className="relative">
+        <input id="au-pass" type="password" placeholder=" " value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} />
+        <label htmlFor="au-pass">Temporary password (min 8 chars)</label>
+      </div></div>
+      <div className="field"><div className="relative">
         <input id="au-dept" placeholder=" " value={dept} onChange={e=>setDept(e.target.value)} />
         <label htmlFor="au-dept">Department</label>
       </div></div>
       <div>
         <div className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground mb-2 font-bold">Role</div>
         <div className="grid grid-cols-2 gap-2">
-          {["Collaborator","Manager","HR","Admin"].map(r => (
-            <button type="button" key={r} onClick={()=>setRole(r)}
-              className={`rounded-xl border px-3 py-2 text-[11px] tracking-[0.15em] uppercase font-bold transition ${role===r ? "border-foreground bg-foreground text-background" : "border-border bg-card text-muted-foreground hover:border-foreground"}`}>
-              {r}
+          {roles.map(r => (
+            <button type="button" key={r.v} onClick={()=>setRole(r.v)}
+              className={`rounded-xl border px-3 py-2 text-[11px] tracking-[0.15em] uppercase font-bold transition ${role===r.v ? "border-foreground bg-foreground text-background" : "border-border bg-card text-muted-foreground hover:border-foreground"}`}>
+              {r.label}
             </button>
           ))}
         </div>
       </div>
+      {error && <div className="text-xs text-destructive font-medium">{error}</div>}
+      {busy && <div className="text-xs text-muted-foreground">Creating account…</div>}
     </form>
   );
 }
