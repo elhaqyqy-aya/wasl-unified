@@ -15,6 +15,7 @@ import { Route as DashboardRhRouteImport } from './routes/dashboard.rh'
 import { Route as DashboardManagerRouteImport } from './routes/dashboard.manager'
 import { Route as DashboardCollabRouteImport } from './routes/dashboard.collab'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as DashboardRhIndexRouteImport } from './routes/dashboard.rh.index'
 import { Route as DashboardManagerIndexRouteImport } from './routes/dashboard.manager.index'
 import { Route as DashboardCollabIndexRouteImport } from './routes/dashboard.collab.index'
@@ -64,6 +65,11 @@ const DashboardCollabRoute = DashboardCollabRouteImport.update({
 const DashboardAdminRoute = DashboardAdminRouteImport.update({
   id: '/dashboard/admin',
   path: '/dashboard/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRhIndexRoute = DashboardRhIndexRouteImport.update({
@@ -174,6 +180,7 @@ const DashboardAdminProfileRoute = DashboardAdminProfileRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/collab': typeof DashboardCollabRouteWithChildren
   '/dashboard/manager': typeof DashboardManagerRouteWithChildren
@@ -202,6 +209,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/admin/profile': typeof DashboardAdminProfileRoute
   '/dashboard/admin/security': typeof DashboardAdminSecurityRoute
   '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/collab': typeof DashboardCollabRouteWithChildren
   '/dashboard/manager': typeof DashboardManagerRouteWithChildren
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/api/chat'
     | '/dashboard/admin'
     | '/dashboard/collab'
     | '/dashboard/manager'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/api/chat'
     | '/dashboard/admin/profile'
     | '/dashboard/admin/security'
     | '/dashboard/admin/settings'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/api/chat'
     | '/dashboard/admin'
     | '/dashboard/collab'
     | '/dashboard/manager'
@@ -338,6 +350,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ApiChatRoute: typeof ApiChatRoute
   DashboardAdminRoute: typeof DashboardAdminRouteWithChildren
   DashboardCollabRoute: typeof DashboardCollabRouteWithChildren
   DashboardManagerRoute: typeof DashboardManagerRouteWithChildren
@@ -386,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/admin'
       fullPath: '/dashboard/admin'
       preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/rh/': {
@@ -613,6 +633,7 @@ const DashboardRhRouteWithChildren = DashboardRhRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ApiChatRoute: ApiChatRoute,
   DashboardAdminRoute: DashboardAdminRouteWithChildren,
   DashboardCollabRoute: DashboardCollabRouteWithChildren,
   DashboardManagerRoute: DashboardManagerRouteWithChildren,
@@ -621,13 +642,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
