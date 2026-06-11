@@ -63,9 +63,17 @@ export const listAllDocuments = createServerFn({ method: "GET" })
     if (!isRH && !isAdmin) throw new Error("Forbidden");
     const { data, error } = await supabase
       .from("documents")
-      .select("*, profiles!documents_owner_id_fkey(full_name,email)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) throw new Error(error.message);
-    return { documents: data ?? [] };
+    const ids = Array.from(new Set((data ?? []).map((d) => d.owner_id)));
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .in("id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
+    const map = new Map((profs ?? []).map((p) => [p.id, p]));
+    return {
+      documents: (data ?? []).map((d) => ({ ...d, owner: map.get(d.owner_id) ?? null })),
+    };
   });

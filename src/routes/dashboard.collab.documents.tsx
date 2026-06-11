@@ -1,71 +1,101 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader, Panel } from "@/components/dashboard/Bits";
 import { Modal, Toast } from "@/components/Modal";
-import { FileText, Download, Plus } from "lucide-react";
+import { FileText, Download, Plus, Loader2 } from "lucide-react";
+import { createDocument, listMyDocuments } from "@/lib/documents.functions";
+import { openPrintablePdf } from "@/lib/pdf";
 
 export const Route = createFileRoute("/dashboard/collab/documents")({
   component: Documents,
 });
 
-const DOCS = [
-  { n: "Salary certificate · Nov 2025", t: "Certificate", d: "2 days ago" },
-  { n: "Remote-work request · approved", t: "Request", d: "1 week ago" },
-  { n: "Annual contract · 2025", t: "Contract", d: "Last year" },
-  { n: "Onboarding kit", t: "Internal guide", d: "3 months ago" },
+type Tpl = { label: string; type: "certificate" | "contract" | "policy" | "other"; body: (reason: string) => string };
+const TEMPLATES: Tpl[] = [
+  { label: "Salary certificate", type: "certificate", body: (r) => `This is to certify that the bearer is currently employed by the company.\n\nReason: ${r || "Administrative use."}\n\nThis certificate is issued at the employee's request for any lawful purpose it may serve.` },
+  { label: "Leave request", type: "other", body: (r) => `I hereby request leave for the following reason:\n\n${r || "Personal time off."}\n\nThank you for your consideration.` },
+  { label: "Remote-work request", type: "other", body: (r) => `I request authorization to perform my duties remotely.\n\nMotivation: ${r || "Better focus and family balance."}` },
+  { label: "Internal transfer", type: "other", body: (r) => `I am formally requesting an internal mobility.\n\nReason: ${r || "Career development."}` },
+  { label: "Loan attestation", type: "certificate", body: (r) => `This attestation confirms the bearer's stable employment for the purpose of a loan application.\n\nReason: ${r || "Personal loan."}` },
 ];
-
-const TEMPLATES = ["Salary certificate","Leave request","Remote-work request","Internal transfer","Loan attestation"];
 
 function Documents() {
   const [open, setOpen] = useState(false);
-  const [tpl, setTpl] = useState(TEMPLATES[0]);
+  const [tplIdx, setTplIdx] = useState(0);
   const [reason, setReason] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+  const qc = useQueryClient();
+
+  const listFn = useServerFn(listMyDocuments);
+  const createFn = useServerFn(createDocument);
+  const { data, isLoading } = useQuery({ queryKey: ["my-docs"], queryFn: () => listFn() });
+  const mutate = useMutation({
+    mutationFn: (input: { title: string; type: any; body: string }) => createFn({ data: input }),
+    onSuccess: ({ document }) => {
+      qc.invalidateQueries({ queryKey: ["my-docs"] });
+      setOpen(false);
+      setReason("");
+      setToast(`${document.title} generated`);
+      const tpl = TEMPLATES[tplIdx];
+      openPrintablePdf({ title: document.title, kind: tpl.label, body: tpl.body(reason), issuedAt: document.issued_at ?? undefined });
+    },
+    onError: (e: any) => setToast(e?.message ?? "Failed to generate"),
+  });
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    setOpen(false);
-    setReason("");
-    setToast("Request sent to HR");
+    const tpl = TEMPLATES[tplIdx];
+    const title = `${tpl.label} · ${new Date().toLocaleDateString("en-GB", { month: "short", year: "numeric" })}`;
+    mutate.mutate({ title, type: tpl.type, body: tpl.body(reason) });
   }
+
+  const docs = data?.documents ?? [];
 
   return (
     <div className="space-y-6">
       <PageHeader kicker="Your space" title="Documents" subtitle="Generate, sign and store your HR documents — pre-filled and versioned."
         right={<button onClick={()=>setOpen(true)} className="pill-btn accent !text-[10px] !py-1.5 !px-3 tracking-[0.2em] uppercase"><Plus className="w-3.5 h-3.5"/> New</button>} />
       <Panel title="Templates available">
-        {TEMPLATES.map((t) => (
-          <div key={t} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
-            <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-accent" /><span className="text-sm">{t}</span></div>
-            <button onClick={() => { setTpl(t); setOpen(true); }} className="pill-btn !text-[9px] !py-1 !px-2.5 tracking-[0.2em] uppercase">Generate</button>
+        {TEMPLATES.map((t, i) => (
+          <div key={t.label} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+            <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-accent" /><span className="text-sm">{t.label}</span></div>
+            <button onClick={() => { setTplIdx(i); setOpen(true); }} className="pill-btn !text-[9px] !py-1 !px-2.5 tracking-[0.2em] uppercase">Generate</button>
           </div>
         ))}
       </Panel>
       <Panel title="Your documents">
-        {DOCS.map((d, i) => (
-          <div key={i} className="flex items-center gap-3 py-3 border-b border-border last:border-0">
-            <div className="w-10 h-10 rounded-lg bg-secondary grid place-items-center"><FileText className="w-4 h-4 text-accent" /></div>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm truncate">{d.n}</div>
-              <div className="text-xs text-muted-foreground">{d.t} · {d.d}</div>
+        {isLoading && <div className="text-xs text-muted-foreground py-4">Loading…</div>}
+        {!isLoading && docs.length === 0 && <div className="text-xs text-muted-foreground py-4">No documents yet. Generate one from a template above.</div>}
+        {docs.map((d: any) => {
+          const body = decodeBody(d.storage_path);
+          return (
+            <div key={d.id} className="flex items-center gap-3 py-3 border-b border-border last:border-0">
+              <div className="w-10 h-10 rounded-lg bg-secondary grid place-items-center"><FileText className="w-4 h-4 text-accent" /></div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm truncate">{d.title}</div>
+                <div className="text-xs text-muted-foreground capitalize">{d.type} · {new Date(d.created_at).toLocaleDateString()}</div>
+              </div>
+              <button onClick={() => openPrintablePdf({ title: d.title, kind: d.type, body, issuedAt: d.issued_at })} className="pill-btn !text-[9px] !py-1.5 !px-2.5 tracking-[0.2em] uppercase">
+                <Download className="w-3 h-3"/> PDF
+              </button>
             </div>
-            <button onClick={() => setToast("Downloaded")} className="pill-btn !text-[9px] !py-1.5 !px-2.5 tracking-[0.2em] uppercase"><Download className="w-3 h-3"/> PDF</button>
-          </div>
-        ))}
+          );
+        })}
       </Panel>
 
-      <Modal open={open} onClose={() => setOpen(false)} kicker="REQUEST" title="New document"
+      <Modal open={open} onClose={() => setOpen(false)} kicker="GENERATE" title="New document"
         footer={
-          <button form="cdoc-form" type="submit" className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase">
-            Submit request
+          <button form="cdoc-form" type="submit" disabled={mutate.isPending} className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase disabled:opacity-50">
+            {mutate.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : "Generate & open PDF"}
           </button>
         }>
         <form id="cdoc-form" onSubmit={submit} className="space-y-3">
           <div>
             <div className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground mb-2 font-bold">Template</div>
-            <select value={tpl} onChange={e=>setTpl(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:border-foreground">
-              {TEMPLATES.map(t => <option key={t}>{t}</option>)}
+            <select value={tplIdx} onChange={e=>setTplIdx(Number(e.target.value))} className="w-full px-3 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:border-foreground">
+              {TEMPLATES.map((t, i) => <option key={t.label} value={i}>{t.label}</option>)}
             </select>
           </div>
           <div className="field"><div className="relative">
@@ -73,7 +103,7 @@ function Documents() {
             <label htmlFor="cdoc-reason">Reason / details</label>
           </div></div>
           <div className="rounded-xl bg-secondary/60 border border-border p-3 text-[11px] text-muted-foreground leading-relaxed">
-            Your HR team will validate and send the signed document within 48h.
+            We generate, save and open a printable PDF immediately. HR will be notified for validation.
           </div>
         </form>
       </Modal>
@@ -83,3 +113,7 @@ function Documents() {
   );
 }
 
+function decodeBody(path: string | null): string {
+  if (!path?.startsWith("inline://")) return "";
+  try { return decodeURIComponent(escape(atob(path.slice(9)))); } catch { return ""; }
+}
