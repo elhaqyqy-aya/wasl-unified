@@ -1,5 +1,5 @@
-import wasl from "@/assets/wasl-logo.png";
-import humanai from "@/assets/humanai-logo.png";
+import wasl from "@/assets/wasl-logo.png.asset.json";
+import humanai from "@/assets/humanai-logo.png.asset.json";
 
 export function Logo({
   variant = "wasl",
@@ -10,13 +10,16 @@ export function Logo({
   className?: string;
   showByline?: boolean;
 }) {
-  const src = variant === "wasl" ? wasl : humanai;
+  if (variant === "humanai") {
+    return <img src={humanai.url} alt="Humanai" className={`${className} w-auto object-contain`} />;
+  }
   return (
-    <div className="inline-flex items-center gap-2">
-      <img src={src} alt="Wasl by Humanai" className={`${className} w-auto object-contain`} />
-      {showByline && variant === "wasl" && (
-        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground leading-none">
-          by<br />Humanai
+    <div className="inline-flex items-end gap-2 leading-none">
+      <img src={wasl.url} alt="Wasl" className={`${className} w-auto object-contain`} />
+      {showByline && (
+        <span className="inline-flex items-center gap-1.5 pb-1 text-[9px] tracking-[0.22em] uppercase text-muted-foreground">
+          <span>by</span>
+          <img src={humanai.url} alt="Humanai" className="h-3 w-auto object-contain opacity-90" />
         </span>
       )}
     </div>
