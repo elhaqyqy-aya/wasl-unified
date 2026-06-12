@@ -14,11 +14,11 @@ export const Route = createFileRoute("/dashboard/collab/documents")({
 
 type Tpl = { label: string; type: "certificate" | "contract" | "policy" | "other"; body: (reason: string) => string };
 const TEMPLATES: Tpl[] = [
-  { label: "Salary certificate", type: "certificate", body: (r) => `This is to certify that the bearer is currently employed by the company.\n\nReason: ${r || "Administrative use."}\n\nThis certificate is issued at the employee's request for any lawful purpose it may serve.` },
-  { label: "Leave request", type: "other", body: (r) => `I hereby request leave for the following reason:\n\n${r || "Personal time off."}\n\nThank you for your consideration.` },
-  { label: "Remote-work request", type: "other", body: (r) => `I request authorization to perform my duties remotely.\n\nMotivation: ${r || "Better focus and family balance."}` },
-  { label: "Internal transfer", type: "other", body: (r) => `I am formally requesting an internal mobility.\n\nReason: ${r || "Career development."}` },
-  { label: "Loan attestation", type: "certificate", body: (r) => `This attestation confirms the bearer's stable employment for the purpose of a loan application.\n\nReason: ${r || "Personal loan."}` },
+  { label: "Salary certificate", type: "certificate", body: (r) => `This is to certify that {{name}}, holding the position of {{position}} in the {{department}} department since {{hire_date}}, is currently employed by the company as of {{today}}.\n\nReason: ${r || "Administrative use."}\n\nThis certificate is issued at the employee's request.` },
+  { label: "Leave request", type: "other", body: (r) => `Requester: {{name}} ({{position}})\nDate: {{today}}\n\nI hereby request leave for the following reason:\n\n${r || "Personal time off."}\n\nThank you for your consideration.` },
+  { label: "Remote-work request", type: "other", body: (r) => `Requester: {{name}} — {{position}}\nDate: {{today}}\n\nI request authorization to perform my duties remotely.\n\nMotivation: ${r || "Better focus and family balance."}` },
+  { label: "Internal transfer", type: "other", body: (r) => `Requester: {{name}} — {{department}}\n\nI am formally requesting an internal mobility.\n\nReason: ${r || "Career development."}` },
+  { label: "Loan attestation", type: "certificate", body: (r) => `This attestation confirms that {{name}}, employed as {{position}} since {{hire_date}}, has stable employment with the company for the purpose of a loan application.\n\nReason: ${r || "Personal loan."}` },
 ];
 
 function Documents() {
@@ -37,9 +37,12 @@ function Documents() {
       qc.invalidateQueries({ queryKey: ["my-docs"] });
       setOpen(false);
       setReason("");
-      setToast(`${document.title} generated`);
-      const tpl = TEMPLATES[tplIdx];
-      openPrintablePdf({ title: document.title, kind: tpl.label, body: tpl.body(reason), issuedAt: document.issued_at ?? undefined });
+      if (document.status === "pending") {
+        setToast(`${document.title} submitted — awaiting HR validation`);
+      } else {
+        setToast(`${document.title} generated`);
+        openPrintablePdf({ title: document.title, kind: TEMPLATES[tplIdx].label, body: document.body ?? "", issuedAt: document.issued_at ?? undefined });
+      }
     },
     onError: (e: any) => setToast(e?.message ?? "Failed to generate"),
   });
@@ -69,15 +72,21 @@ function Documents() {
         {isLoading && <div className="text-xs text-muted-foreground py-4">Loading…</div>}
         {!isLoading && docs.length === 0 && <div className="text-xs text-muted-foreground py-4">No documents yet. Generate one from a template above.</div>}
         {docs.map((d: any) => {
-          const body = decodeBody(d.storage_path);
+          const body = d.body ?? decodeBody(d.storage_path);
+          const pending = d.status === "pending";
+          const rejected = d.status === "rejected";
           return (
             <div key={d.id} className="flex items-center gap-3 py-3 border-b border-border last:border-0">
               <div className="w-10 h-10 rounded-lg bg-secondary grid place-items-center"><FileText className="w-4 h-4 text-accent" /></div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate">{d.title}</div>
+                <div className="flex items-center gap-2"><span className="font-medium text-sm truncate">{d.title}</span>
+                  {pending && <span className="text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded bg-warning/15 text-warning">pending</span>}
+                  {rejected && <span className="text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded bg-destructive/15 text-destructive">rejected</span>}
+                </div>
                 <div className="text-xs text-muted-foreground capitalize">{d.type} · {new Date(d.created_at).toLocaleDateString()}</div>
+                {rejected && d.rejection_reason && <div className="text-xs text-destructive mt-0.5">Reason: {d.rejection_reason}</div>}
               </div>
-              <button onClick={() => openPrintablePdf({ title: d.title, kind: d.type, body, issuedAt: d.issued_at })} className="pill-btn !text-[9px] !py-1.5 !px-2.5 tracking-[0.2em] uppercase">
+              <button disabled={pending || rejected} onClick={() => openPrintablePdf({ title: d.title, kind: d.type, body, issuedAt: d.issued_at })} className="pill-btn !text-[9px] !py-1.5 !px-2.5 tracking-[0.2em] uppercase disabled:opacity-40">
                 <Download className="w-3 h-3"/> PDF
               </button>
             </div>
