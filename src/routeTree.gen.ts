@@ -25,11 +25,13 @@ import { Route as DashboardRhProfileRouteImport } from './routes/dashboard.rh.pr
 import { Route as DashboardRhPeopleRouteImport } from './routes/dashboard.rh.people'
 import { Route as DashboardRhDocumentsRouteImport } from './routes/dashboard.rh.documents'
 import { Route as DashboardManagerTeamRouteImport } from './routes/dashboard.manager.team'
+import { Route as DashboardManagerQvtRouteImport } from './routes/dashboard.manager.qvt'
 import { Route as DashboardManagerProfileRouteImport } from './routes/dashboard.manager.profile'
 import { Route as DashboardManagerInsightsRouteImport } from './routes/dashboard.manager.insights'
 import { Route as DashboardManagerAlertsRouteImport } from './routes/dashboard.manager.alerts'
 import { Route as DashboardCollabProfileRouteImport } from './routes/dashboard.collab.profile'
 import { Route as DashboardCollabOnboardingRouteImport } from './routes/dashboard.collab.onboarding'
+import { Route as DashboardCollabOffboardingRouteImport } from './routes/dashboard.collab.offboarding'
 import { Route as DashboardCollabDocumentsRouteImport } from './routes/dashboard.collab.documents'
 import { Route as DashboardCollabAssistantRouteImport } from './routes/dashboard.collab.assistant'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
@@ -117,6 +119,11 @@ const DashboardManagerTeamRoute = DashboardManagerTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => DashboardManagerRoute,
 } as any)
+const DashboardManagerQvtRoute = DashboardManagerQvtRouteImport.update({
+  id: '/qvt',
+  path: '/qvt',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
 const DashboardManagerProfileRoute = DashboardManagerProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -142,6 +149,12 @@ const DashboardCollabOnboardingRoute =
   DashboardCollabOnboardingRouteImport.update({
     id: '/onboarding',
     path: '/onboarding',
+    getParentRoute: () => DashboardCollabRoute,
+  } as any)
+const DashboardCollabOffboardingRoute =
+  DashboardCollabOffboardingRouteImport.update({
+    id: '/offboarding',
+    path: '/offboarding',
     getParentRoute: () => DashboardCollabRoute,
   } as any)
 const DashboardCollabDocumentsRoute =
@@ -191,11 +204,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
@@ -216,11 +231,13 @@ export interface FileRoutesByTo {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
@@ -246,11 +263,13 @@ export interface FileRoutesById {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
+  '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
@@ -277,11 +296,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
     | '/dashboard/manager/profile'
+    | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/people'
@@ -302,11 +323,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
     | '/dashboard/manager/profile'
+    | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/people'
@@ -331,11 +354,13 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
     | '/dashboard/manager/profile'
+    | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/people'
@@ -471,6 +496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardManagerTeamRouteImport
       parentRoute: typeof DashboardManagerRoute
     }
+    '/dashboard/manager/qvt': {
+      id: '/dashboard/manager/qvt'
+      path: '/qvt'
+      fullPath: '/dashboard/manager/qvt'
+      preLoaderRoute: typeof DashboardManagerQvtRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
     '/dashboard/manager/profile': {
       id: '/dashboard/manager/profile'
       path: '/profile'
@@ -504,6 +536,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/dashboard/collab/onboarding'
       preLoaderRoute: typeof DashboardCollabOnboardingRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
+    '/dashboard/collab/offboarding': {
+      id: '/dashboard/collab/offboarding'
+      path: '/offboarding'
+      fullPath: '/dashboard/collab/offboarding'
+      preLoaderRoute: typeof DashboardCollabOffboardingRouteImport
       parentRoute: typeof DashboardCollabRoute
     }
     '/dashboard/collab/documents': {
@@ -574,6 +613,7 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
 interface DashboardCollabRouteChildren {
   DashboardCollabAssistantRoute: typeof DashboardCollabAssistantRoute
   DashboardCollabDocumentsRoute: typeof DashboardCollabDocumentsRoute
+  DashboardCollabOffboardingRoute: typeof DashboardCollabOffboardingRoute
   DashboardCollabOnboardingRoute: typeof DashboardCollabOnboardingRoute
   DashboardCollabProfileRoute: typeof DashboardCollabProfileRoute
   DashboardCollabIndexRoute: typeof DashboardCollabIndexRoute
@@ -582,6 +622,7 @@ interface DashboardCollabRouteChildren {
 const DashboardCollabRouteChildren: DashboardCollabRouteChildren = {
   DashboardCollabAssistantRoute: DashboardCollabAssistantRoute,
   DashboardCollabDocumentsRoute: DashboardCollabDocumentsRoute,
+  DashboardCollabOffboardingRoute: DashboardCollabOffboardingRoute,
   DashboardCollabOnboardingRoute: DashboardCollabOnboardingRoute,
   DashboardCollabProfileRoute: DashboardCollabProfileRoute,
   DashboardCollabIndexRoute: DashboardCollabIndexRoute,
@@ -595,6 +636,7 @@ interface DashboardManagerRouteChildren {
   DashboardManagerAlertsRoute: typeof DashboardManagerAlertsRoute
   DashboardManagerInsightsRoute: typeof DashboardManagerInsightsRoute
   DashboardManagerProfileRoute: typeof DashboardManagerProfileRoute
+  DashboardManagerQvtRoute: typeof DashboardManagerQvtRoute
   DashboardManagerTeamRoute: typeof DashboardManagerTeamRoute
   DashboardManagerIndexRoute: typeof DashboardManagerIndexRoute
 }
@@ -603,6 +645,7 @@ const DashboardManagerRouteChildren: DashboardManagerRouteChildren = {
   DashboardManagerAlertsRoute: DashboardManagerAlertsRoute,
   DashboardManagerInsightsRoute: DashboardManagerInsightsRoute,
   DashboardManagerProfileRoute: DashboardManagerProfileRoute,
+  DashboardManagerQvtRoute: DashboardManagerQvtRoute,
   DashboardManagerTeamRoute: DashboardManagerTeamRoute,
   DashboardManagerIndexRoute: DashboardManagerIndexRoute,
 }
@@ -642,3 +685,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
