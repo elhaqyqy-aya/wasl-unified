@@ -135,39 +135,71 @@ export type Database = {
       }
       documents: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          body: string | null
           created_at: string
           id: string
           issued_at: string | null
           owner_id: string
+          rejection_reason: string | null
+          requested_by: string | null
           size_bytes: number | null
+          status: Database["public"]["Enums"]["document_status"]
           storage_path: string | null
           title: string
           type: Database["public"]["Enums"]["document_type"]
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          body?: string | null
           created_at?: string
           id?: string
           issued_at?: string | null
           owner_id: string
+          rejection_reason?: string | null
+          requested_by?: string | null
           size_bytes?: number | null
+          status?: Database["public"]["Enums"]["document_status"]
           storage_path?: string | null
           title: string
           type: Database["public"]["Enums"]["document_type"]
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          body?: string | null
           created_at?: string
           id?: string
           issued_at?: string | null
           owner_id?: string
+          rejection_reason?: string | null
+          requested_by?: string | null
           size_bytes?: number | null
+          status?: Database["public"]["Enums"]["document_status"]
           storage_path?: string | null
           title?: string
           type?: Database["public"]["Enums"]["document_type"]
         }
         Relationships: [
           {
+            foreignKeyName: "documents_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "documents_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_requested_by_fkey"
+            columns: ["requested_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -202,6 +234,92 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "engagement_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_articles: {
+        Row: {
+          audience: string
+          category: string
+          content: string
+          created_at: string
+          id: string
+          language: string
+          published: boolean
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          category?: string
+          content: string
+          created_at?: string
+          id?: string
+          language?: string
+          published?: boolean
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          language?: string
+          published?: boolean
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      offboarding: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_step: string | null
+          departure_date: string | null
+          employee_id: string
+          id: string
+          knowledge_transfer: string | null
+          progress: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["offboarding_status"]
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: string | null
+          departure_date?: string | null
+          employee_id: string
+          id?: string
+          knowledge_transfer?: string | null
+          progress?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["offboarding_status"]
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: string | null
+          departure_date?: string | null
+          employee_id?: string
+          id?: string
+          knowledge_transfer?: string | null
+          progress?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["offboarding_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offboarding_employee_id_fkey"
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -363,6 +481,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      compute_risk_alerts: {
+        Args: never
+        Returns: {
+          inserted: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -376,6 +500,7 @@ export type Database = {
       absence_type: "vacation" | "sick" | "remote" | "unpaid" | "training"
       alert_severity: "info" | "warning" | "critical"
       app_role: "admin" | "rh" | "manager" | "collab"
+      document_status: "pending" | "approved" | "rejected" | "draft"
       document_type:
         | "contract"
         | "payslip"
@@ -383,6 +508,7 @@ export type Database = {
         | "certificate"
         | "id"
         | "other"
+      offboarding_status: "in_progress" | "completed" | "cancelled"
       onboarding_status: "not_started" | "in_progress" | "completed"
     }
     CompositeTypes: {
@@ -515,6 +641,7 @@ export const Constants = {
       absence_type: ["vacation", "sick", "remote", "unpaid", "training"],
       alert_severity: ["info", "warning", "critical"],
       app_role: ["admin", "rh", "manager", "collab"],
+      document_status: ["pending", "approved", "rejected", "draft"],
       document_type: [
         "contract",
         "payslip",
@@ -523,6 +650,7 @@ export const Constants = {
         "id",
         "other",
       ],
+      offboarding_status: ["in_progress", "completed", "cancelled"],
       onboarding_status: ["not_started", "in_progress", "completed"],
     },
   },
