@@ -1,79 +1,77 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader, Panel } from "@/components/dashboard/Bits";
-import { Modal, Toast } from "@/components/Modal";
-import { Compass, LogOut, CheckCircle2, Clock, Play } from "lucide-react";
+import { Toast } from "@/components/Modal";
+import { Compass, CheckCircle2, XCircle, FileText, Loader2 } from "lucide-react";
+import { listOnboardings } from "@/lib/workflows.functions";
+import { listPendingDocuments, reviewDocument } from "@/lib/documents.functions";
 
-export const Route = createFileRoute("/dashboard/rh/workflows")({
-  component: Workflows,
-});
-
-type Wf = { kind: "on" | "off"; who: string; step: string; progress: number; days: string };
-const WORKFLOWS: Wf[] = [
-  { kind: "on", who: "Mehdi Ziani", step: "Welcome kit · payroll setup", progress: 23, days: "Day 7 / 30" },
-  { kind: "on", who: "Lina Karim", step: "Team rituals · first 1:1", progress: 56, days: "Day 17 / 30" },
-  { kind: "off", who: "Karim Naciri", step: "Knowledge transfer", progress: 88, days: "Step 7 / 8" },
-  { kind: "on", who: "Fatima Idrissi", step: "Compliance · IT access", progress: 10, days: "Day 3 / 30" },
-];
+export const Route = createFileRoute("/dashboard/rh/workflows")({ component: Workflows });
 
 function Workflows() {
-  const [sel, setSel] = useState<Wf | null>(null);
+  const qc = useQueryClient();
   const [toast, setToast] = useState<string | null>(null);
+  const obFn = useServerFn(listOnboardings);
+  const pendingFn = useServerFn(listPendingDocuments);
+  const reviewFn = useServerFn(reviewDocument);
+  const { data: obData } = useQuery({ queryKey: ["onbs"], queryFn: () => obFn() });
+  const { data: pendData } = useQuery({ queryKey: ["pending-docs"], queryFn: () => pendingFn() });
+
+  const review = useMutation({
+    mutationFn: (input: { id: string; decision: "approve" | "reject"; reason?: string }) => reviewFn({ data: input }),
+    onSuccess: (_, vars) => { qc.invalidateQueries({ queryKey: ["pending-docs"] }); qc.invalidateQueries({ queryKey: ["all-docs"] }); setToast(vars.decision === "approve" ? "Approved" : "Rejected"); },
+  });
+
+  const onbs = obData?.items ?? [];
+  const pend = pendData?.documents ?? [];
 
   return (
     <div className="space-y-5">
-      <PageHeader kicker="Workflows" title="Onboarding & offboarding" subtitle="AI agents drive each step. You stay in control." />
+      <PageHeader kicker="Workflows" title="Approvals & onboardings" subtitle="HR validates AI-prefilled documents and tracks every onboarding live." />
 
-      <div className="space-y-3">
-        {WORKFLOWS.map(w => (
-          <button key={w.who} onClick={() => setSel(w)} className="edunai-card p-4 w-full text-left flex items-center gap-3 hover:border-foreground transition">
-            <div className="w-11 h-11 rounded-xl grid place-items-center text-white shrink-0" style={{ background: w.kind === "on" ? "var(--grad-brand)" : "#1d1d1d" }}>
-              {w.kind === "on" ? <Compass className="w-5 h-5"/> : <LogOut className="w-5 h-5"/>}
+      <Panel title={`Pending documents · ${pend.length}`}>
+        {pend.length === 0 && <div className="text-xs text-muted-foreground py-4">All caught up. No documents awaiting validation.</div>}
+        {pend.map((d: any) => (
+          <div key={d.id} className="py-3 border-b border-border last:border-0">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-secondary grid place-items-center"><FileText className="w-4 h-4 text-accent" /></div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm">{d.title}</div>
+                <div className="text-xs text-muted-foreground">{d.owner?.full_name ?? "Unknown"} · {d.owner?.position ?? ""} · {new Date(d.created_at).toLocaleDateString()}</div>
+              </div>
+              <button onClick={() => review.mutate({ id: d.id, decision: "approve" })} disabled={review.isPending}
+                className="pill-btn accent !text-[9px] !py-1 !px-2.5 tracking-[0.2em] uppercase"><CheckCircle2 className="w-3 h-3" /> Approve</button>
+              <button onClick={() => { const r = prompt("Reason for rejection?") ?? ""; if (r) review.mutate({ id: d.id, decision: "reject", reason: r }); }}
+                className="pill-btn !text-[9px] !py-1 !px-2.5 tracking-[0.2em] uppercase"><XCircle className="w-3 h-3" /> Reject</button>
+            </div>
+          </div>
+        ))}
+      </Panel>
+
+      <Panel title={`Onboardings · ${onbs.length}`}>
+        {onbs.length === 0 && <div className="text-xs text-muted-foreground py-4">No active onboardings.</div>}
+        {onbs.map((o: any) => (
+          <div key={o.id} className="py-3 border-b border-border last:border-0 flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl grid place-items-center text-white shrink-0" style={{ background: "var(--grad-brand)" }}>
+              <Compass className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <div className="font-display font-bold text-sm tracking-tight">{w.who}</div>
-                <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground">{w.days}</span>
+                <div className="font-medium text-sm">{o.employee?.full_name ?? "Unknown"}</div>
+                <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{o.status}</span>
               </div>
-              <div className="text-xs text-muted-foreground mt-0.5 truncate">{w.step}</div>
-              <div className="h-1.5 rounded-full bg-secondary overflow-hidden mt-2">
-                <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${w.progress}%`, background: "var(--accent)" }} />
+              <div className="text-xs text-muted-foreground truncate">{o.current_step ?? "—"}</div>
+              <div className="h-1.5 rounded-full bg-secondary overflow-hidden mt-1.5">
+                <div className="h-full rounded-full transition-all" style={{ width: `${o.progress}%`, background: "var(--accent)" }} />
               </div>
             </div>
-          </button>
+          </div>
         ))}
-      </div>
+      </Panel>
 
-      <Modal open={!!sel} onClose={() => setSel(null)} kicker={sel?.kind === "on" ? "ONBOARDING" : "OFFBOARDING"} title={sel?.who ?? ""}
-        footer={
-          <div className="flex gap-2">
-            <button onClick={() => { setSel(null); setToast("Workflow paused"); }} className="pill-btn flex-1 justify-center !py-2.5 !text-[10px] tracking-[0.2em] uppercase">Pause</button>
-            <button onClick={() => { setSel(null); setToast("Next step started"); }} className="pill-btn accent flex-1 justify-center !py-2.5 !text-[10px] tracking-[0.2em] uppercase">
-              <Play className="w-3.5 h-3.5"/> Next step
-            </button>
-          </div>
-        }>
-        {sel && (
-          <div className="space-y-3">
-            <div className="text-sm text-muted-foreground">{sel.step}</div>
-            <ul className="space-y-2">
-              {[
-                { ok: true, t: "Welcome email · sent" },
-                { ok: true, t: "IT access provisioned" },
-                { ok: false, t: "Manager 1:1 scheduled" },
-                { ok: false, t: "Compliance module" },
-                { ok: false, t: "Mentor assigned" },
-              ].map((s, i) => (
-                <li key={i} className="flex items-center gap-3 py-2 border-b border-border last:border-0 text-sm">
-                  {s.ok ? <CheckCircle2 className="w-4 h-4 text-success"/> : <Clock className="w-4 h-4 text-muted-foreground"/>}
-                  <span className={s.ok ? "text-muted-foreground line-through" : ""}>{s.t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </Modal>
-
+      {review.isPending && <div className="text-xs text-muted-foreground flex items-center gap-2"><Loader2 className="w-3 h-3 animate-spin" /> Working…</div>}
       <Toast msg={toast} onDone={() => setToast(null)} />
     </div>
   );
