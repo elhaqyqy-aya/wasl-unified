@@ -7,6 +7,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { getUser, logout, ROLE_META, tourSeen, type Role, type User } from "@/lib/auth";
 import { DemoTour } from "@/components/dashboard/DemoTour";
+import { Logo } from "@/components/Logo";
 
 const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{ className?: string }> }[]> = {
   collab: [
@@ -14,12 +15,14 @@ const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{
     { to: "/dashboard/collab/assistant", label: "Assistant", icon: MessageSquare },
     { to: "/dashboard/collab/documents", label: "Docs", icon: FileText },
     { to: "/dashboard/collab/onboarding", label: "Onboard", icon: Compass },
+    { to: "/dashboard/collab/offboarding", label: "Offboard", icon: LogOut },
     { to: "/dashboard/collab/profile", label: "Profile", icon: UserIcon },
   ],
   manager: [
     { to: "/dashboard/manager", label: "Overview", icon: LayoutDashboard },
     { to: "/dashboard/manager/team", label: "Team", icon: Users },
     { to: "/dashboard/manager/insights", label: "Insights", icon: BarChart3 },
+    { to: "/dashboard/manager/qvt", label: "QVT", icon: HeartHandshake },
     { to: "/dashboard/manager/alerts", label: "Alerts", icon: Bell },
     { to: "/dashboard/manager/profile", label: "Profile", icon: UserIcon },
   ],
@@ -28,6 +31,7 @@ const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{
     { to: "/dashboard/rh/people", label: "People", icon: HeartHandshake },
     { to: "/dashboard/rh/documents", label: "Docs", icon: FileText },
     { to: "/dashboard/rh/workflows", label: "Workflows", icon: ClipboardList },
+    { to: "/dashboard/rh/knowledge", label: "KB", icon: BarChart3 },
     { to: "/dashboard/rh/profile", label: "Profile", icon: UserIcon },
   ],
   admin: [
@@ -112,7 +116,7 @@ export function AppShell({ role }: { role: Role }) {
       <header className="px-2 pt-2 sticky top-0 z-40">
         <div className="edunai-card px-4 h-14 flex items-center justify-between shadow-[0_4px_20px_-12px_rgba(0,0,0,.15)]">
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-display font-extrabold text-lg tracking-tight">Wasl by Humanai</span>
+            <Logo className="h-7" />
             <span className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground pl-2 border-l border-border h-4 flex items-center">{ROLE_META[role].label}</span>
           </Link>
           <div className="flex items-center gap-1">
