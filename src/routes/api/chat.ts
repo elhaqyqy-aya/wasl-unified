@@ -30,6 +30,17 @@ Rules:
 - Recommend least-privilege actions.`,
 };
 
+const PII_PATTERNS: [RegExp, string][] = [
+  [/\b[\w.+-]+@[\w-]+\.[\w.-]+\b/g, "[email]"],
+  [/\b(?:\+?\d{1,3}[ -]?)?(?:\(?\d{2,4}\)?[ -]?){2,5}\d{2,4}\b/g, "[phone]"],
+  [/\b\d{4,}\b/g, "[number]"],
+];
+function maskPii(text: string): string {
+  let out = text;
+  for (const [re, repl] of PII_PATTERNS) out = out.replace(re, repl);
+  return out;
+}
+
 type ChatRequestBody = {
   messages?: unknown;
   role?: "collab" | "manager" | "rh" | "admin";
@@ -51,6 +62,7 @@ export const Route = createFileRoute("/api/chat")({
 
         // Identify user from bearer (for audit) — optional, never block chat
         let userId: string | null = null;
+        let userProfile: { full_name: string; position: string | null; department: string | null } | null = null;
         try {
           const auth = request.headers.get("authorization");
           if (auth?.startsWith("Bearer ")) {
@@ -62,6 +74,11 @@ export const Route = createFileRoute("/api/chat")({
             );
             const { data } = await supa.auth.getUser(token);
             userId = data.user?.id ?? null;
+            if (userId) {
+              const admin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+              const { data: p } = await admin.from("profiles").select("full_name,position,department").eq("id", userId).maybeSingle();
+              if (p) userProfile = p as any;
+            }
           }
         } catch {
           /* ignore */
@@ -80,13 +97,43 @@ export const Route = createFileRoute("/api/chat")({
 
         // Detect suspicious patterns (privilege escalation, PII probing)
         const suspicious =
-          /salary|salaire|payroll|paie|password|mot de passe|admin|service[_ ]role|api[_ ]?key|other employee|autre (collaborateur|employé)|jailbreak|ignore (previous|all) instructions|system prompt/i.test(
+          /\bpassword\b|mot de passe|service[_ ]role|api[_ ]?key|other employee|autre (collaborateur|employ[eé])|jailbreak|ignore (previous|all|the) instructions|system prompt|reveal (your )?prompt/i.test(
             lastUserText,
           );
+        // Hard programmatic guard for collaborators asking about others
+        const crossEmployeeProbe = role === "collab" && /\b(another|other|autre)\s+(employee|collaborateur|colleague|coll[eé]gue|person)\b|\b(his|her|son|sa) (salary|salaire|wage|bonus|prime)\b/i.test(lastUserText);
+
+        // Knowledge base retrieval (lightweight keyword RAG)
+        let kbContext = "";
+        try {
+          const admin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+          const tokens = Array.from(new Set(lastUserText.toLowerCase().match(/[a-zàâçéèêëîïôûùüÿñæœ]{4,}/g) ?? [])).slice(0, 8);
+          if (tokens.length) {
+            const ors = tokens.map((t) => `title.ilike.%${t}%,content.ilike.%${t}%,tags.cs.{${t}}`).join(",");
+            const { data: arts } = await admin
+              .from("kb_articles")
+              .select("title,category,content")
+              .eq("published", true)
+              .or(ors)
+              .limit(4);
+            if (arts && arts.length) {
+              kbContext = "\n\nValidated HR knowledge base excerpts (use these as ground truth — cite the title in your answer):\n" +
+                arts.map((a: any) => `### ${a.title} (${a.category})\n${a.content}`).join("\n\n");
+            }
+          }
+        } catch (e) { console.error("kb fetch failed", e); }
+
+        const profileCtx = userProfile
+          ? `\n\nThe current user is ${userProfile.full_name}${userProfile.position ? `, ${userProfile.position}` : ""}${userProfile.department ? ` (${userProfile.department})` : ""}.`
+          : "";
+        const guard = crossEmployeeProbe
+          ? "\n\nIMPORTANT: The user appears to ask about another employee's private data. Politely refuse, remind them of confidentiality, and suggest contacting HR."
+          : "";
+        const systemPrompt = (SYSTEM_PROMPTS[role] ?? SYSTEM_PROMPTS.collab) + profileCtx + kbContext + guard;
 
         const result = streamText({
           model,
-          system: SYSTEM_PROMPTS[role] ?? SYSTEM_PROMPTS.collab,
+          system: systemPrompt,
           messages: await convertToModelMessages(uiMessages),
           onFinish: async ({ text }) => {
             try {
@@ -95,6 +142,8 @@ export const Route = createFileRoute("/api/chat")({
                 process.env.SUPABASE_SERVICE_ROLE_KEY!,
                 { auth: { persistSession: false } },
               );
+              const maskedPrompt = maskPii(lastUserText).slice(0, 300);
+              const maskedReply = maskPii(text).slice(0, 300);
               await admin.from("audit_logs").insert({
                 actor_id: userId,
                 action: suspicious ? "ai.chat.suspicious" : "ai.chat",
@@ -102,16 +151,18 @@ export const Route = createFileRoute("/api/chat")({
                 entity_id: null,
                 metadata: {
                   role,
-                  prompt_preview: lastUserText.slice(0, 300),
-                  reply_preview: text.slice(0, 300),
+                  prompt_preview: maskedPrompt,
+                  reply_preview: maskedReply,
                   reply_length: text.length,
                   flagged: suspicious,
+                  kb_hits: kbContext ? kbContext.split("###").length - 1 : 0,
+                  cross_employee_probe: crossEmployeeProbe,
                 },
               });
-              if (suspicious) {
+              if (suspicious || crossEmployeeProbe) {
                 await admin.from("alerts").insert({
                   title: "Suspicious AI assistant query",
-                  description: lastUserText.slice(0, 280),
+                  description: maskedPrompt,
                   severity: "high",
                   target_id: userId,
                 });
