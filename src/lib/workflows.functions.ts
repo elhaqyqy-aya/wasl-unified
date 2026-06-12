@@ -32,7 +32,7 @@ export const advanceOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid(), progress: z.number().int().min(0).max(100), current_step: z.string().max(120).optional() }).parse(d))
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = { progress: data.progress };
+    const patch: { progress: number; current_step?: string; status?: "completed"; completed_at?: string } = { progress: data.progress };
     if (data.current_step) patch.current_step = data.current_step;
     if (data.progress >= 100) { patch.status = "completed"; patch.completed_at = new Date().toISOString().slice(0, 10); }
     const { data: row, error } = await context.supabase.from("onboarding").update(patch).eq("id", data.id).select("*").single();
@@ -98,8 +98,9 @@ export const updateOffboarding = createServerFn({ method: "POST" })
     knowledge_transfer: z.string().max(20000).optional(),
   }).parse(d))
   .handler(async ({ data, context }) => {
-    const { id, ...patch } = data;
-    if (patch.progress === 100) { (patch as any).status = "completed"; (patch as any).completed_at = new Date().toISOString().slice(0, 10); }
+    const { id, ...rest } = data;
+    const patch: { progress?: number; current_step?: string; knowledge_transfer?: string; status?: "completed"; completed_at?: string } = { ...rest };
+    if (patch.progress === 100) { patch.status = "completed"; patch.completed_at = new Date().toISOString().slice(0, 10); }
     const { data: row, error } = await context.supabase.from("offboarding").update(patch).eq("id", id).select("*").single();
     if (error) throw new Error(error.message);
     return { offboarding: row };
