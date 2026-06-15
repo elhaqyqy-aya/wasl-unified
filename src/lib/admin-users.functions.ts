@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const RoleEnum = z.enum(["admin", "rh", "manager", "collab"]);
 
 const CreateUserSchema = z.object({
-  email: z.string().trim().email().max(255),
+  email: z.string().trim().toLowerCase().email().max(255),
   password: z.string().min(8).max(128),
   full_name: z.string().trim().min(1).max(120),
   role: RoleEnum,
@@ -75,4 +75,29 @@ export const createUserAccount = createServerFn({ method: "POST" })
     }
 
     return { id: newUserId, email: data.email, full_name: data.full_name, role: data.role };
+  });
+
+const ResetPasswordSchema = z.object({
+  user_id: z.string().uuid(),
+  new_password: z.string().min(8).max(128),
+});
+
+export const resetUserPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => ResetPasswordSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin, error: roleErr } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    if (roleErr) throw new Error(roleErr.message);
+    if (!isAdmin) throw new Error("Forbidden: admin role required");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
+      password: data.new_password,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

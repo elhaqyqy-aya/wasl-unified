@@ -37,10 +37,27 @@ ${opts.recipient ? `<div style="font-size:12px;color:#5b6478;margin-top:6px">Rec
 <div class="noprint" style="position:fixed;top:8px;right:8px"><button onclick="window.print()" style="padding:6px 10px;font:600 11px sans-serif;background:#0b1730;color:#fff;border:0;border-radius:6px;cursor:pointer">Print / Save PDF</button></div>
 <script>setTimeout(()=>window.print(),350)</script>
 </body></html>`;
-  const w = window.open("", "_blank", "noopener,noreferrer,width=900,height=1100");
-  if (!w) return;
-  w.document.write(html);
-  w.document.close();
+  // Use a Blob URL so the new window has a proper document & navigation
+  // context — `document.write` into a blank window is blocked or rendered
+  // as a blank page in many browsers (Chrome, Safari, in-app webviews).
+  try {
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, "_blank", "noopener,noreferrer,width=900,height=1100");
+    if (!w) {
+      // Popup blocked — trigger a download fallback so the user still gets the file
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${opts.title.replace(/[^a-z0-9]+/gi, "_")}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+    // Revoke after a delay so the new window has time to load
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  } catch (e) {
+    console.error("openPrintablePdf failed", e);
+  }
 }
 
 function escapeHtml(s: string) {

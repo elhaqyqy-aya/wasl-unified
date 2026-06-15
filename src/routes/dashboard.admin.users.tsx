@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader, Stat } from "@/components/dashboard/Bits";
 import { Modal, Toast } from "@/components/Modal";
-import { Search, UserPlus, Mail, Phone, MapPin, Briefcase, Calendar, ChevronRight, ShieldCheck, Ban } from "lucide-react";
+import { Search, UserPlus, Mail, Phone, MapPin, Briefcase, Calendar, ChevronRight, ShieldCheck, Ban, Copy, KeyRound } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { createUserAccount } from "@/lib/admin-users.functions";
+import { createUserAccount, resetUserPassword } from "@/lib/admin-users.functions";
 
 export const Route = createFileRoute("/dashboard/admin/users")({
   component: AdminUsers,
@@ -139,12 +139,7 @@ function AdminUsers() {
       </Modal>
 
       {/* Invite */}
-      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Create a new account"
-        footer={
-          <button form="adm-invite" type="submit" className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase">
-            Create account
-          </button>
-        }>
+      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Create a new account">
         <InviteForm onSent={(m) => { setInvite(false); setToast(m); }} />
       </Modal>
 
@@ -161,6 +156,7 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [created, setCreated] = useState<{ email: string; password: string } | null>(null);
   const create = useServerFn(createUserAccount);
 
   async function submit(e: React.FormEvent) {
@@ -168,8 +164,9 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
     setError(null);
     setBusy(true);
     try {
-      await create({ data: { email, password, full_name: name, role, department: dept || undefined } });
-      onSent(`Account created for ${email}`);
+      const cleanEmail = email.trim().toLowerCase();
+      await create({ data: { email: cleanEmail, password, full_name: name, role, department: dept || undefined } });
+      setCreated({ email: cleanEmail, password });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create account");
     } finally {
@@ -184,6 +181,41 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
     { v: "admin", label: "Admin" },
   ];
 
+  if (created) {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-2xl border-2 border-success/40 bg-success/10 p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-success" />
+            <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-success">Account created</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Share these credentials securely with the user. The password is shown <b>only once</b> — copy it now.
+          </p>
+          <div className="space-y-2">
+            <div>
+              <div className="text-[9px] tracking-[0.22em] uppercase text-muted-foreground mb-1 font-bold">Email</div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 text-xs bg-card border border-border rounded-lg px-2.5 py-2 font-mono">{created.email}</code>
+                <button type="button" onClick={() => navigator.clipboard?.writeText(created.email)} className="pill-btn !text-[9px] !py-1.5 !px-2"><Copy className="w-3 h-3" /></button>
+              </div>
+            </div>
+            <div>
+              <div className="text-[9px] tracking-[0.22em] uppercase text-muted-foreground mb-1 font-bold">Password</div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 text-xs bg-card border border-border rounded-lg px-2.5 py-2 font-mono select-all">{created.password}</code>
+                <button type="button" onClick={() => navigator.clipboard?.writeText(created.password)} className="pill-btn !text-[9px] !py-1.5 !px-2"><Copy className="w-3 h-3" /></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" onClick={() => onSent(`Account ${created.email} ready — credentials shared`)} className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase">
+          Done
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form id="adm-invite" onSubmit={submit} className="space-y-3">
       <div className="field"><div className="relative">
@@ -195,9 +227,12 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
         <label htmlFor="au-email">Work email</label>
       </div></div>
       <div className="field"><div className="relative">
-        <input id="au-pass" type="password" placeholder=" " value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} />
+        <input id="au-pass" type="text" placeholder=" " value={password} onChange={e=>setPassword(e.target.value)} required minLength={8} />
         <label htmlFor="au-pass">Temporary password (min 8 chars)</label>
       </div></div>
+      <button type="button" onClick={() => setPassword(Math.random().toString(36).slice(2, 10) + "A1!")} className="text-[10px] tracking-[0.18em] uppercase font-bold text-accent hover:underline">
+        Generate strong password
+      </button>
       <div className="field"><div className="relative">
         <input id="au-dept" placeholder=" " value={dept} onChange={e=>setDept(e.target.value)} />
         <label htmlFor="au-dept">Department</label>
@@ -215,6 +250,9 @@ function InviteForm({ onSent }: { onSent: (m: string) => void }) {
       </div>
       {error && <div className="text-xs text-destructive font-medium">{error}</div>}
       {busy && <div className="text-xs text-muted-foreground">Creating account…</div>}
+      <button type="submit" disabled={busy} className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase disabled:opacity-50">
+        Create account
+      </button>
     </form>
   );
 }
