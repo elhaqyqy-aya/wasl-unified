@@ -139,12 +139,7 @@ function AdminUsers() {
       </Modal>
 
       {/* Invite */}
-      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Create a new account"
-        footer={
-          <button form="adm-invite" type="submit" className="pill-btn accent w-full justify-center !py-2.5 !text-[11px] tracking-[0.2em] uppercase">
-            Create account
-          </button>
-        }>
+      <Modal open={invite} onClose={() => setInvite(false)} kicker="ONBOARD" title="Create a new account">
         <InviteForm onSent={(m) => { setInvite(false); setToast(m); }} />
       </Modal>
 
