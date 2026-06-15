@@ -14,12 +14,15 @@ export function Logo({
     return <img src={humanai} alt="Humanai" className={`${className} w-auto object-contain`} />;
   }
   return (
-    <div className="inline-flex items-center gap-2 leading-none">
-      <img src={wasl} alt="Wasl" className={`${className} w-auto object-contain shrink-0`} />
+    <div className="relative inline-block leading-none">
+      <img src={wasl} alt="Wasl" className={`${className} w-auto object-contain block`} />
       {showByline && (
-        <span className="inline-flex items-center gap-1 text-[9px] tracking-[0.22em] uppercase text-muted-foreground border-l border-border pl-2">
+        <span
+          className="absolute -bottom-2 -right-1 translate-y-full inline-flex items-center gap-1 text-[8px] tracking-[0.2em] uppercase text-muted-foreground whitespace-nowrap"
+          aria-label="by Humanai"
+        >
           <span>by</span>
-          <img src={humanai} alt="Humanai" className="h-4 w-auto object-contain" />
+          <img src={humanai} alt="Humanai" className="h-2.5 w-auto object-contain" />
         </span>
       )}
     </div>
