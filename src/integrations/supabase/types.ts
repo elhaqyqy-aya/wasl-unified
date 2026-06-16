@@ -65,6 +65,44 @@ export type Database = {
           },
         ]
       }
+      ai_escalations: {
+        Row: {
+          created_at: string
+          id: string
+          prompt_excerpt: string
+          role: string
+          status: string
+          topic: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prompt_excerpt: string
+          role: string
+          status?: string
+          topic: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prompt_excerpt?: string
+          role?: string
+          status?: string
+          topic?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_escalations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts: {
         Row: {
           acknowledged: boolean
@@ -392,6 +430,53 @@ export type Database = {
         }
         Relationships: []
       }
+      presence: {
+        Row: {
+          anomaly: string | null
+          check_in: string | null
+          check_out: string | null
+          created_at: string
+          day: string
+          device_id: string | null
+          employee_id: string
+          id: string
+          method: string
+          source: string
+        }
+        Insert: {
+          anomaly?: string | null
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          day: string
+          device_id?: string | null
+          employee_id: string
+          id?: string
+          method?: string
+          source?: string
+        }
+        Update: {
+          anomaly?: string | null
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          day?: string
+          device_id?: string | null
+          employee_id?: string
+          id?: string
+          method?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "presence_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -498,7 +583,13 @@ export type Database = {
     Enums: {
       absence_status: "pending" | "approved" | "rejected" | "cancelled"
       absence_type: "vacation" | "sick" | "remote" | "unpaid" | "training"
-      alert_severity: "info" | "warning" | "critical"
+      alert_severity:
+        | "info"
+        | "warning"
+        | "critical"
+        | "low"
+        | "medium"
+        | "high"
       app_role: "admin" | "rh" | "manager" | "collab"
       document_status: "pending" | "approved" | "rejected" | "draft"
       document_type:
@@ -639,7 +730,7 @@ export const Constants = {
     Enums: {
       absence_status: ["pending", "approved", "rejected", "cancelled"],
       absence_type: ["vacation", "sick", "remote", "unpaid", "training"],
-      alert_severity: ["info", "warning", "critical"],
+      alert_severity: ["info", "warning", "critical", "low", "medium", "high"],
       app_role: ["admin", "rh", "manager", "collab"],
       document_status: ["pending", "approved", "rejected", "draft"],
       document_type: [
