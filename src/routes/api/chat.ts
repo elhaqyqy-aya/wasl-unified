@@ -223,9 +223,26 @@ export const Route = createFileRoute("/api/chat")({
                   reply_length: text.length,
                   flagged,
                   kb_hits: kbContext ? kbContext.split("###").length - 1 : 0,
+                  cited: citedTitles,
+                  sensitive_topic: sensitiveTopic,
                   cross_employee_probe: crossEmployeeProbe,
                 },
               });
+              if (sensitiveTopic) {
+                await admin.from("ai_escalations").insert({
+                  user_id: userId,
+                  role,
+                  topic: sensitiveTopic,
+                  prompt_excerpt: maskedPrompt,
+                  status: "open",
+                });
+                await admin.from("alerts").insert({
+                  title: `Sensitive AI request — ${sensitiveTopic.replace("_", " ")}`,
+                  description: maskedPrompt,
+                  severity: sensitiveTopic === "mental_health" ? "high" : "medium",
+                  target_id: userId,
+                });
+              }
               if (crossEmployeeProbe) {
                 await admin.from("alerts").insert({
                   title: "Cross-employee data probe",
