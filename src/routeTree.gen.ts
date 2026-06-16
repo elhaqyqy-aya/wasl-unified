@@ -31,6 +31,7 @@ import { Route as DashboardManagerProfileRouteImport } from './routes/dashboard.
 import { Route as DashboardManagerInsightsRouteImport } from './routes/dashboard.manager.insights'
 import { Route as DashboardManagerAlertsRouteImport } from './routes/dashboard.manager.alerts'
 import { Route as DashboardCollabProfileRouteImport } from './routes/dashboard.collab.profile'
+import { Route as DashboardCollabPresenceRouteImport } from './routes/dashboard.collab.presence'
 import { Route as DashboardCollabOnboardingRouteImport } from './routes/dashboard.collab.onboarding'
 import { Route as DashboardCollabOffboardingRouteImport } from './routes/dashboard.collab.offboarding'
 import { Route as DashboardCollabLeaveRouteImport } from './routes/dashboard.collab.leave'
@@ -152,6 +153,11 @@ const DashboardCollabProfileRoute = DashboardCollabProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => DashboardCollabRoute,
 } as any)
+const DashboardCollabPresenceRoute = DashboardCollabPresenceRouteImport.update({
+  id: '/presence',
+  path: '/presence',
+  getParentRoute: () => DashboardCollabRoute,
+} as any)
 const DashboardCollabOnboardingRoute =
   DashboardCollabOnboardingRouteImport.update({
     id: '/onboarding',
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/presence': typeof DashboardCollabPresenceRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/presence': typeof DashboardCollabPresenceRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
+  '/dashboard/collab/presence': typeof DashboardCollabPresenceRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/presence'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/presence'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
+    | '/dashboard/collab/presence'
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
@@ -562,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCollabProfileRouteImport
       parentRoute: typeof DashboardCollabRoute
     }
+    '/dashboard/collab/presence': {
+      id: '/dashboard/collab/presence'
+      path: '/presence'
+      fullPath: '/dashboard/collab/presence'
+      preLoaderRoute: typeof DashboardCollabPresenceRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
     '/dashboard/collab/onboarding': {
       id: '/dashboard/collab/onboarding'
       path: '/onboarding'
@@ -654,6 +673,7 @@ interface DashboardCollabRouteChildren {
   DashboardCollabLeaveRoute: typeof DashboardCollabLeaveRoute
   DashboardCollabOffboardingRoute: typeof DashboardCollabOffboardingRoute
   DashboardCollabOnboardingRoute: typeof DashboardCollabOnboardingRoute
+  DashboardCollabPresenceRoute: typeof DashboardCollabPresenceRoute
   DashboardCollabProfileRoute: typeof DashboardCollabProfileRoute
   DashboardCollabIndexRoute: typeof DashboardCollabIndexRoute
 }
@@ -664,6 +684,7 @@ const DashboardCollabRouteChildren: DashboardCollabRouteChildren = {
   DashboardCollabLeaveRoute: DashboardCollabLeaveRoute,
   DashboardCollabOffboardingRoute: DashboardCollabOffboardingRoute,
   DashboardCollabOnboardingRoute: DashboardCollabOnboardingRoute,
+  DashboardCollabPresenceRoute: DashboardCollabPresenceRoute,
   DashboardCollabProfileRoute: DashboardCollabProfileRoute,
   DashboardCollabIndexRoute: DashboardCollabIndexRoute,
 }
