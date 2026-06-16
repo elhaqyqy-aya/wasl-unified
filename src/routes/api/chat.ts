@@ -51,6 +51,19 @@ function classifyThreat(text: string): { level: "none" | "high" | "critical"; ki
   return { level: "none", kind: null };
 }
 
+// Sensitive topics that should be answered with care AND escalated to a human (HR)
+const SENSITIVE_TOPICS: { key: string; re: RegExp }[] = [
+  { key: "harassment",    re: /\b(harass(ment|ed|ing)?|harc[eè]l(ement|er|é)|bully(ing)?|intimidation|mobbing|inappropriate\s+(touch|behaviour|behavior))\b/i },
+  { key: "discrimination",re: /\b(discriminat(ion|ed|ory)?|racist|sexist|homophob|transphob|ageis[mt]|religious\s+slur)\b/i },
+  { key: "mental_health", re: /\b(suicid|self.?harm|depress|burn.?out|burnout|panic\s+attack|crise\s+d.?angoisse|d[eé]press|harceler\s+psycholog)\b/i },
+  { key: "salary_dispute",re: /\b(unpaid|underpaid|salary\s+(error|missing|wrong)|paie\s+(erreur|manquante)|bonus\s+(refused|missing))\b/i },
+  { key: "legal",         re: /\b(lawyer|sue|sued|lawsuit|labor\s+court|prud.?hommes|tribunal|wrongful\s+(dismissal|termination))\b/i },
+];
+function classifySensitive(text: string): string | null {
+  for (const t of SENSITIVE_TOPICS) if (t.re.test(text)) return t.key;
+  return null;
+}
+
 function refusalMessage(kind: string): string {
   if (kind === "harmful_content") {
     return "I can't help with that — this request is outside the scope of Wasl, your HR assistant, and it touches on harmful or unsafe content. This attempt has been logged.\n\nI'm here to support you on HR-related topics: leave, payroll, policies, onboarding, mobility, well-being. How can I help you on those?";
