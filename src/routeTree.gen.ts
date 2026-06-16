@@ -23,6 +23,7 @@ import { Route as DashboardAdminIndexRouteImport } from './routes/dashboard.admi
 import { Route as DashboardRhWorkflowsRouteImport } from './routes/dashboard.rh.workflows'
 import { Route as DashboardRhProfileRouteImport } from './routes/dashboard.rh.profile'
 import { Route as DashboardRhPeopleRouteImport } from './routes/dashboard.rh.people'
+import { Route as DashboardRhMedicalRouteImport } from './routes/dashboard.rh.medical'
 import { Route as DashboardRhKnowledgeRouteImport } from './routes/dashboard.rh.knowledge'
 import { Route as DashboardRhDocumentsRouteImport } from './routes/dashboard.rh.documents'
 import { Route as DashboardManagerTeamRouteImport } from './routes/dashboard.manager.team'
@@ -111,6 +112,11 @@ const DashboardRhProfileRoute = DashboardRhProfileRouteImport.update({
 const DashboardRhPeopleRoute = DashboardRhPeopleRouteImport.update({
   id: '/people',
   path: '/people',
+  getParentRoute: () => DashboardRhRoute,
+} as any)
+const DashboardRhMedicalRoute = DashboardRhMedicalRouteImport.update({
+  id: '/medical',
+  path: '/medical',
   getParentRoute: () => DashboardRhRoute,
 } as any)
 const DashboardRhKnowledgeRoute = DashboardRhKnowledgeRouteImport.update({
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/knowledge': typeof DashboardRhKnowledgeRoute
+  '/dashboard/rh/medical': typeof DashboardRhMedicalRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
   '/dashboard/rh/profile': typeof DashboardRhProfileRoute
   '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/knowledge': typeof DashboardRhKnowledgeRoute
+  '/dashboard/rh/medical': typeof DashboardRhMedicalRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
   '/dashboard/rh/profile': typeof DashboardRhProfileRoute
   '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
   '/dashboard/rh/documents': typeof DashboardRhDocumentsRoute
   '/dashboard/rh/knowledge': typeof DashboardRhKnowledgeRoute
+  '/dashboard/rh/medical': typeof DashboardRhMedicalRoute
   '/dashboard/rh/people': typeof DashboardRhPeopleRoute
   '/dashboard/rh/profile': typeof DashboardRhProfileRoute
   '/dashboard/rh/workflows': typeof DashboardRhWorkflowsRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/knowledge'
+    | '/dashboard/rh/medical'
     | '/dashboard/rh/people'
     | '/dashboard/rh/profile'
     | '/dashboard/rh/workflows'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/knowledge'
+    | '/dashboard/rh/medical'
     | '/dashboard/rh/people'
     | '/dashboard/rh/profile'
     | '/dashboard/rh/workflows'
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/dashboard/manager/team'
     | '/dashboard/rh/documents'
     | '/dashboard/rh/knowledge'
+    | '/dashboard/rh/medical'
     | '/dashboard/rh/people'
     | '/dashboard/rh/profile'
     | '/dashboard/rh/workflows'
@@ -528,6 +540,13 @@ declare module '@tanstack/react-router' {
       path: '/people'
       fullPath: '/dashboard/rh/people'
       preLoaderRoute: typeof DashboardRhPeopleRouteImport
+      parentRoute: typeof DashboardRhRoute
+    }
+    '/dashboard/rh/medical': {
+      id: '/dashboard/rh/medical'
+      path: '/medical'
+      fullPath: '/dashboard/rh/medical'
+      preLoaderRoute: typeof DashboardRhMedicalRouteImport
       parentRoute: typeof DashboardRhRoute
     }
     '/dashboard/rh/knowledge': {
@@ -738,6 +757,7 @@ const DashboardManagerRouteWithChildren =
 interface DashboardRhRouteChildren {
   DashboardRhDocumentsRoute: typeof DashboardRhDocumentsRoute
   DashboardRhKnowledgeRoute: typeof DashboardRhKnowledgeRoute
+  DashboardRhMedicalRoute: typeof DashboardRhMedicalRoute
   DashboardRhPeopleRoute: typeof DashboardRhPeopleRoute
   DashboardRhProfileRoute: typeof DashboardRhProfileRoute
   DashboardRhWorkflowsRoute: typeof DashboardRhWorkflowsRoute
@@ -747,6 +767,7 @@ interface DashboardRhRouteChildren {
 const DashboardRhRouteChildren: DashboardRhRouteChildren = {
   DashboardRhDocumentsRoute: DashboardRhDocumentsRoute,
   DashboardRhKnowledgeRoute: DashboardRhKnowledgeRoute,
+  DashboardRhMedicalRoute: DashboardRhMedicalRoute,
   DashboardRhPeopleRoute: DashboardRhPeopleRoute,
   DashboardRhProfileRoute: DashboardRhProfileRoute,
   DashboardRhWorkflowsRoute: DashboardRhWorkflowsRoute,

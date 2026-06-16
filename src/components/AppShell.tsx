@@ -2,7 +2,8 @@ import { Link, Outlet, useNavigate } from "@tanstack/react-router";
 import {
   LogOut, LayoutDashboard, MessageSquare, FileText, Users, ShieldAlert,
   BarChart3, Settings, Bell, Compass, User as UserIcon, X, MapPin, Mail,
-  CheckCircle2, AlertTriangle, Info, HeartHandshake, ClipboardList
+  CheckCircle2, AlertTriangle, Info, HeartHandshake, ClipboardList,
+  CalendarDays, Fingerprint, Stethoscope, CheckSquare
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getUser, logout, ROLE_META, tourSeen, type Role, type User } from "@/lib/auth";
@@ -13,6 +14,8 @@ const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{
   collab: [
     { to: "/dashboard/collab", label: "Home", icon: LayoutDashboard },
     { to: "/dashboard/collab/assistant", label: "Assistant", icon: MessageSquare },
+    { to: "/dashboard/collab/leave", label: "Leave", icon: CalendarDays },
+    { to: "/dashboard/collab/presence", label: "Presence", icon: Fingerprint },
     { to: "/dashboard/collab/documents", label: "Docs", icon: FileText },
     { to: "/dashboard/collab/onboarding", label: "Onboard", icon: Compass },
     { to: "/dashboard/collab/offboarding", label: "Offboard", icon: LogOut },
@@ -21,6 +24,7 @@ const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{
   manager: [
     { to: "/dashboard/manager", label: "Overview", icon: LayoutDashboard },
     { to: "/dashboard/manager/team", label: "Team", icon: Users },
+    { to: "/dashboard/manager/leave", label: "Leave", icon: CheckSquare },
     { to: "/dashboard/manager/insights", label: "Insights", icon: BarChart3 },
     { to: "/dashboard/manager/qvt", label: "QVT", icon: HeartHandshake },
     { to: "/dashboard/manager/alerts", label: "Alerts", icon: Bell },
@@ -29,6 +33,7 @@ const NAV: Record<Role, { to: string; label: string; icon: React.ComponentType<{
   rh: [
     { to: "/dashboard/rh", label: "Overview", icon: LayoutDashboard },
     { to: "/dashboard/rh/people", label: "People", icon: HeartHandshake },
+    { to: "/dashboard/rh/medical", label: "Medical", icon: Stethoscope },
     { to: "/dashboard/rh/documents", label: "Docs", icon: FileText },
     { to: "/dashboard/rh/workflows", label: "Workflows", icon: ClipboardList },
     { to: "/dashboard/rh/knowledge", label: "KB", icon: BarChart3 },
