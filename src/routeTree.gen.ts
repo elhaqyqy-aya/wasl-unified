@@ -28,6 +28,7 @@ import { Route as DashboardRhDocumentsRouteImport } from './routes/dashboard.rh.
 import { Route as DashboardManagerTeamRouteImport } from './routes/dashboard.manager.team'
 import { Route as DashboardManagerQvtRouteImport } from './routes/dashboard.manager.qvt'
 import { Route as DashboardManagerProfileRouteImport } from './routes/dashboard.manager.profile'
+import { Route as DashboardManagerLeaveRouteImport } from './routes/dashboard.manager.leave'
 import { Route as DashboardManagerInsightsRouteImport } from './routes/dashboard.manager.insights'
 import { Route as DashboardManagerAlertsRouteImport } from './routes/dashboard.manager.alerts'
 import { Route as DashboardCollabProfileRouteImport } from './routes/dashboard.collab.profile'
@@ -137,6 +138,11 @@ const DashboardManagerProfileRoute = DashboardManagerProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => DashboardManagerRoute,
 } as any)
+const DashboardManagerLeaveRoute = DashboardManagerLeaveRouteImport.update({
+  id: '/leave',
+  path: '/leave',
+  getParentRoute: () => DashboardManagerRoute,
+} as any)
 const DashboardManagerInsightsRoute =
   DashboardManagerInsightsRouteImport.update({
     id: '/insights',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/leave': typeof DashboardManagerLeaveRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
   '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/leave': typeof DashboardManagerLeaveRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
   '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
@@ -294,6 +302,7 @@ export interface FileRoutesById {
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
   '/dashboard/manager/alerts': typeof DashboardManagerAlertsRoute
   '/dashboard/manager/insights': typeof DashboardManagerInsightsRoute
+  '/dashboard/manager/leave': typeof DashboardManagerLeaveRoute
   '/dashboard/manager/profile': typeof DashboardManagerProfileRoute
   '/dashboard/manager/qvt': typeof DashboardManagerQvtRoute
   '/dashboard/manager/team': typeof DashboardManagerTeamRoute
@@ -330,6 +339,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
+    | '/dashboard/manager/leave'
     | '/dashboard/manager/profile'
     | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
+    | '/dashboard/manager/leave'
     | '/dashboard/manager/profile'
     | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/dashboard/collab/profile'
     | '/dashboard/manager/alerts'
     | '/dashboard/manager/insights'
+    | '/dashboard/manager/leave'
     | '/dashboard/manager/profile'
     | '/dashboard/manager/qvt'
     | '/dashboard/manager/team'
@@ -553,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardManagerProfileRouteImport
       parentRoute: typeof DashboardManagerRoute
     }
+    '/dashboard/manager/leave': {
+      id: '/dashboard/manager/leave'
+      path: '/leave'
+      fullPath: '/dashboard/manager/leave'
+      preLoaderRoute: typeof DashboardManagerLeaveRouteImport
+      parentRoute: typeof DashboardManagerRoute
+    }
     '/dashboard/manager/insights': {
       id: '/dashboard/manager/insights'
       path: '/insights'
@@ -696,6 +715,7 @@ const DashboardCollabRouteWithChildren = DashboardCollabRoute._addFileChildren(
 interface DashboardManagerRouteChildren {
   DashboardManagerAlertsRoute: typeof DashboardManagerAlertsRoute
   DashboardManagerInsightsRoute: typeof DashboardManagerInsightsRoute
+  DashboardManagerLeaveRoute: typeof DashboardManagerLeaveRoute
   DashboardManagerProfileRoute: typeof DashboardManagerProfileRoute
   DashboardManagerQvtRoute: typeof DashboardManagerQvtRoute
   DashboardManagerTeamRoute: typeof DashboardManagerTeamRoute
@@ -705,6 +725,7 @@ interface DashboardManagerRouteChildren {
 const DashboardManagerRouteChildren: DashboardManagerRouteChildren = {
   DashboardManagerAlertsRoute: DashboardManagerAlertsRoute,
   DashboardManagerInsightsRoute: DashboardManagerInsightsRoute,
+  DashboardManagerLeaveRoute: DashboardManagerLeaveRoute,
   DashboardManagerProfileRoute: DashboardManagerProfileRoute,
   DashboardManagerQvtRoute: DashboardManagerQvtRoute,
   DashboardManagerTeamRoute: DashboardManagerTeamRoute,
