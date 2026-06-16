@@ -33,6 +33,7 @@ import { Route as DashboardManagerAlertsRouteImport } from './routes/dashboard.m
 import { Route as DashboardCollabProfileRouteImport } from './routes/dashboard.collab.profile'
 import { Route as DashboardCollabOnboardingRouteImport } from './routes/dashboard.collab.onboarding'
 import { Route as DashboardCollabOffboardingRouteImport } from './routes/dashboard.collab.offboarding'
+import { Route as DashboardCollabLeaveRouteImport } from './routes/dashboard.collab.leave'
 import { Route as DashboardCollabDocumentsRouteImport } from './routes/dashboard.collab.documents'
 import { Route as DashboardCollabAssistantRouteImport } from './routes/dashboard.collab.assistant'
 import { Route as DashboardAdminUsersRouteImport } from './routes/dashboard.admin.users'
@@ -163,6 +164,11 @@ const DashboardCollabOffboardingRoute =
     path: '/offboarding',
     getParentRoute: () => DashboardCollabRoute,
   } as any)
+const DashboardCollabLeaveRoute = DashboardCollabLeaveRouteImport.update({
+  id: '/leave',
+  path: '/leave',
+  getParentRoute: () => DashboardCollabRoute,
+} as any)
 const DashboardCollabDocumentsRoute =
   DashboardCollabDocumentsRouteImport.update({
     id: '/documents',
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/dashboard/admin/users': typeof DashboardAdminUsersRoute
   '/dashboard/collab/assistant': typeof DashboardCollabAssistantRoute
   '/dashboard/collab/documents': typeof DashboardCollabDocumentsRoute
+  '/dashboard/collab/leave': typeof DashboardCollabLeaveRoute
   '/dashboard/collab/offboarding': typeof DashboardCollabOffboardingRoute
   '/dashboard/collab/onboarding': typeof DashboardCollabOnboardingRoute
   '/dashboard/collab/profile': typeof DashboardCollabProfileRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/users'
     | '/dashboard/collab/assistant'
     | '/dashboard/collab/documents'
+    | '/dashboard/collab/leave'
     | '/dashboard/collab/offboarding'
     | '/dashboard/collab/onboarding'
     | '/dashboard/collab/profile'
@@ -564,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCollabOffboardingRouteImport
       parentRoute: typeof DashboardCollabRoute
     }
+    '/dashboard/collab/leave': {
+      id: '/dashboard/collab/leave'
+      path: '/leave'
+      fullPath: '/dashboard/collab/leave'
+      preLoaderRoute: typeof DashboardCollabLeaveRouteImport
+      parentRoute: typeof DashboardCollabRoute
+    }
     '/dashboard/collab/documents': {
       id: '/dashboard/collab/documents'
       path: '/documents'
@@ -632,6 +651,7 @@ const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(
 interface DashboardCollabRouteChildren {
   DashboardCollabAssistantRoute: typeof DashboardCollabAssistantRoute
   DashboardCollabDocumentsRoute: typeof DashboardCollabDocumentsRoute
+  DashboardCollabLeaveRoute: typeof DashboardCollabLeaveRoute
   DashboardCollabOffboardingRoute: typeof DashboardCollabOffboardingRoute
   DashboardCollabOnboardingRoute: typeof DashboardCollabOnboardingRoute
   DashboardCollabProfileRoute: typeof DashboardCollabProfileRoute
@@ -641,6 +661,7 @@ interface DashboardCollabRouteChildren {
 const DashboardCollabRouteChildren: DashboardCollabRouteChildren = {
   DashboardCollabAssistantRoute: DashboardCollabAssistantRoute,
   DashboardCollabDocumentsRoute: DashboardCollabDocumentsRoute,
+  DashboardCollabLeaveRoute: DashboardCollabLeaveRoute,
   DashboardCollabOffboardingRoute: DashboardCollabOffboardingRoute,
   DashboardCollabOnboardingRoute: DashboardCollabOnboardingRoute,
   DashboardCollabProfileRoute: DashboardCollabProfileRoute,
