@@ -172,15 +172,42 @@ export const Route = createFileRoute("/api/chat")({
         const citedTitles: string[] = [];
         try {
           const admin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
-          const tokens = Array.from(new Set(lastUserText.toLowerCase().match(/[a-zàâçéèêëîïôûùüÿñæœ]{4,}/g) ?? [])).slice(0, 8);
-          if (tokens.length) {
-            const ors = tokens.map((t) => `title.ilike.%${t}%,content.ilike.%${t}%,tags.cs.{${t}}`).join(",");
-            const { data: arts } = await admin.from("kb_articles").select("title,category,content").eq("published", true).or(ors).limit(4);
-            if (arts && arts.length) {
-              arts.forEach((a: any) => citedTitles.push(a.title));
-              kbContext = "\n\nValidated HR knowledge base excerpts (use as ground truth — cite the title):\n" +
-                arts.map((a: { title: string; category: string; content: string }) => `### ${a.title} (${a.category})\n${a.content}`).join("\n\n");
+          // 1) Vector search via embeddings (true RAG)
+          let hits: { title: string; category: string; content: string }[] = [];
+          try {
+            const { embedText } = await import("@/lib/ai-embeddings.server");
+            const emb = await embedText(lastUserText, key);
+            if (emb) {
+              const { data: matches } = await admin.rpc("match_kb_chunks", {
+                query_embedding: `[${emb.join(",")}]` as unknown as number[],
+                match_count: 4,
+              });
+              if (matches && Array.isArray(matches)) {
+                const seen = new Set<string>();
+                for (const m of matches as Array<{ title: string; category: string; content: string; similarity: number }>) {
+                  if (m.similarity < 0.55) continue;
+                  if (seen.has(m.title)) continue;
+                  seen.add(m.title);
+                  hits.push({ title: m.title, category: m.category, content: m.content });
+                }
+              }
             }
+          } catch (e) { console.error("vector search failed", e); }
+
+          // 2) Fallback keyword search if no vector hits
+          if (hits.length === 0) {
+            const tokens = Array.from(new Set(lastUserText.toLowerCase().match(/[a-zàâçéèêëîïôûùüÿñæœ]{4,}/g) ?? [])).slice(0, 8);
+            if (tokens.length) {
+              const ors = tokens.map((t) => `title.ilike.%${t}%,content.ilike.%${t}%,tags.cs.{${t}}`).join(",");
+              const { data: arts } = await admin.from("kb_articles").select("title,category,content").eq("published", true).or(ors).limit(4);
+              if (arts) hits = arts as typeof hits;
+            }
+          }
+
+          if (hits.length) {
+            hits.forEach((a) => citedTitles.push(a.title));
+            kbContext = "\n\nValidated HR knowledge base excerpts (use as ground truth — cite the title):\n" +
+              hits.map((a) => `### ${a.title} (${a.category})\n${a.content}`).join("\n\n");
           }
         } catch (e) { console.error("kb fetch failed", e); }
 

@@ -4,8 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader, Panel } from "@/components/dashboard/Bits";
 import { Modal, Toast } from "@/components/Modal";
-import { BookOpen, Plus, Loader2, Trash2 } from "lucide-react";
-import { listKbArticles, upsertKbArticle, deleteKbArticle } from "@/lib/kb.functions";
+import { BookOpen, Plus, Loader2, Trash2, RefreshCw } from "lucide-react";
+import { listKbArticles, upsertKbArticle, deleteKbArticle, reindexAllKb } from "@/lib/kb.functions";
 
 export const Route = createFileRoute("/dashboard/rh/knowledge")({ component: KB });
 
@@ -17,6 +17,7 @@ function KB() {
   const listFn = useServerFn(listKbArticles);
   const upsertFn = useServerFn(upsertKbArticle);
   const delFn = useServerFn(deleteKbArticle);
+  const reindexFn = useServerFn(reindexAllKb);
   const { data, isLoading } = useQuery({ queryKey: ["kb"], queryFn: () => listFn() });
   const upsert = useMutation({
     mutationFn: (input: any) => upsertFn({ data: input }),
@@ -26,6 +27,11 @@ function KB() {
   const del = useMutation({
     mutationFn: (id: string) => delFn({ data: { id } }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["kb"] }); setToast("Deleted"); },
+  });
+  const reindex = useMutation({
+    mutationFn: () => reindexFn(),
+    onSuccess: (r: any) => setToast(`Re-indexed ${r?.articles ?? 0} articles · ${r?.embedded ?? 0} chunks`),
+    onError: (e: any) => setToast(e?.message ?? "Reindex failed"),
   });
 
   const articles = data?.articles ?? [];
@@ -47,8 +53,15 @@ function KB() {
 
   return (
     <div className="space-y-6">
-      <PageHeader kicker="AI grounding" title="Knowledge base" subtitle="The validated content the AI assistant grounds its answers in."
-        right={<button onClick={() => { setEdit(null); setOpen(true); }} className="pill-btn accent !text-[10px] !py-1.5 !px-3 tracking-[0.2em] uppercase"><Plus className="w-3.5 h-3.5" /> New article</button>} />
+      <PageHeader kicker="AI grounding" title="Knowledge base" subtitle="Vector-indexed for true RAG retrieval by the assistant."
+        right={
+          <div className="flex gap-2">
+            <button onClick={() => reindex.mutate()} disabled={reindex.isPending} className="pill-btn !text-[10px] !py-1.5 !px-3 tracking-[0.2em] uppercase disabled:opacity-60">
+              {reindex.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <RefreshCw className="w-3.5 h-3.5"/>} Re-index
+            </button>
+            <button onClick={() => { setEdit(null); setOpen(true); }} className="pill-btn accent !text-[10px] !py-1.5 !px-3 tracking-[0.2em] uppercase"><Plus className="w-3.5 h-3.5" /> New</button>
+          </div>
+        } />
 
       <Panel title={`${articles.length} articles`}>
         {isLoading && <div className="text-xs text-muted-foreground py-4">Loading…</div>}
